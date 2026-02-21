@@ -24,7 +24,10 @@
         .bar-bg { height: 12px; background: #eee; border-radius: 10px; overflow: hidden; display: flex; }
         .bar-fill { height: 100%; background: linear-gradient(90deg, #36d1dc, #5b86e5); transition: 1s ease; }
         .btn { width: 100%; padding: 20px; background: #8A2BE2; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: 800; cursor: pointer; margin-top: 30px; }
-        .btn:hover { background: #7B1FA2; }
+        .stats-box { background: #f0f0f0; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        .stat-item { display: inline-block; margin: 5px 10px; font-size: 14px; color: #666; }
+        .stat-value { font-weight: 900; color: #333; font-size: 18px; }
+        .trap-warning { color: #ff4757; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -36,6 +39,11 @@
         </div>
 
         <div class="job-desc" id="job-desc"></div>
+
+        <div class="stats-box" id="stats-box">
+            <div class="stat-item">⏱️ 用時：<span class="stat-value" id="time-stat">--:--</span></div>
+            <div class="stat-item">⚠️ 陷阱題：<span class="stat-value" id="trap-stat">-</span></div>
+        </div>
 
         <div id="stats"></div>
 
@@ -72,6 +80,14 @@
             document.getElementById('funny-job').innerText = job.name;
             document.getElementById('job-desc').innerText = job.desc;
 
+            const mins = String(Math.floor(data.time / 60)).padStart(2, '0');
+            const secs = String(data.time % 60).padStart(2, '0');
+            document.getElementById('time-stat').textContent = `${mins}:${secs}`;
+            
+            const trapStat = document.getElementById('trap-stat');
+            trapStat.textContent = (data.traps || 0) + '/4';
+            if (data.traps >= 3) trapStat.className = 'stat-value trap-warning';
+            
             const dims = [
                 { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向' },
                 { n: '資訊 S/N', v: data.scores.SN, l: '實感', r: '直覺' },
