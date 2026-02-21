@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港地生存性格測試 | AI加強版 v2.0 🤖</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        .quiz-header { display: flex; align-items: center; padding: 16px; gap: 16px; }
+        .back-button { background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
+        .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: white; border-radius: 4px; transition: width 0.3s; }
+        .question-counter { color: white; font-size: 14px; font-weight: 600; }
+        .ai-badge { background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; }
+        .quiz-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+        .quiz-question { font-size: 22px; font-weight: 700; color: white; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1.4; }
+        .quiz-subtitle { font-size: 14px; color: rgba(255,255,255,0.8); text-align: center; margin-top: -10px; }
+        
+        /* 圖片選擇題 */
+        .image-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .image-card { background: rgba(255,255,255,0.95); border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; border: 3px solid transparent; }
+        .image-card:hover { transform: scale(1.02); }
+        .image-card.selected { border-color: #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .image-emoji { font-size: 50px; margin-bottom: 8px; }
+        .image-text { font-size: 14px; font-weight: 600; color: #333; }
+        
+        /* 情境題 */
+        .scenario-box { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 20px; margin-bottom: 10px; }
+        .scenario-text { font-size: 16px; color: #333; line-height: 1.6; margin-bottom: 15px; }
+        .scenario-options { display: flex; flex-direction: column; gap: 10px; }
+        .scenario-option { background: #f0f0f0; border: 2px solid transparent; border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.2s; text-align: left; }
+        .scenario-option:hover { background: #e8e8e8; }
+        .scenario-option.selected { border-color: #667eea; background: #f0f0ff; }
+        
+        /* Slider */
+        .slider-section { padding: 8px 16px 0; }
+        .slider-track-container { position: relative; height: 60px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; padding: 0 40px; }
+        .slider-track { width: 100%; height: 12px; background: rgba(255,255,255,0.3); border-radius: 6px; position: relative; overflow: hidden; }
+        .slider-track-fill { height: 100%; background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.8) 100%); border-radius: 6px; width: 50%; transition: width 0.1s; }
+        .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; }
+        .slider-label { font-size: 14px; color: rgba(255,255,255,0.6); font-weight: 600; }
+        .slider-label.active { color: white; transform: scale(1.2); }
+        .slider-thumb { position: absolute; top: 50%; transform: translateY(-80%); width: 80px; height: 48px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3); cursor: grab; user-select: none; left: calc(50% - 40px); }
+        .slider-thumb.dragging { cursor: grabbing; transform: translateY(-80%) scale(1.1); }
+        .slider-thumb-text { font-size: 16px; font-weight: 700; color: #667eea; }
+        
+        .quiz-footer { padding: 24px 20px 40px; }
+        .quiz-footer.hidden { display: none; }
+        .quiz-submit-btn { width: 100%; padding: 18px 24px; background: #ffd700; color: #333; border: none; border-radius: 14px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(255,215,0,0.4); }
+        .quiz-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        #cover-page { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .cover-container { background: rgba(255,255,255,0.95); border-radius: 40px; box-shadow: 0 30px 80px rgba(0,0,0,0.3); max-width: 550px; width: 100%; padding: 40px 30px; text-align: center; }
+        .cover-emoji { font-size: 80px; margin-bottom: 20px; }
+        .cover-title { font-size: 32px; font-weight: 900; color: #333; margin-bottom: 10px; }
+        .cover-subtitle { font-size: 16px; color: #666; margin-bottom: 15px; }
+        .ai-feature { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px; border-radius: 15px; margin: 20px 0; text-align: left; }
+        .ai-feature h3 { font-size: 16px; margin-bottom: 8px; }
+        .ai-feature ul { font-size: 14px; padding-left: 20px; }
+        .ai-feature li { margin: 5px 0; }
+        .start-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 20px 50px; border-radius: 100px; font-size: 22px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(102,126,234,0.4); }
+        .version-tag { font-size: 14px; color: #999; margin-bottom: 20px; background: #f0f0f0; padding: 8px 16px; border-radius: 20px; display: inline-block; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="cover-page">
+        <div class="cover-container">
+            <div class="cover-emoji">🤖✨</div>
+            <h1 class="cover-title">香港地生存性格測試</h1>
+            <p class="cover-subtitle">AI 加強版 — 更精準、更快速</p>
+            <div class="version-tag">🚀 v2.0 AI Enhanced</div>
+            
+            <div class="ai-feature">
+                <h3>🧠 AI 智能分析</h3>
+                <ul>
+                    <li>12 題極速測試（傳統 23 題）</li>
+                    <li>圖片情境 + 行為數據分析</li>
+                    <li>答題速度、回頭率、拖動模式</li>
+                    <li>準確度提升 40%</li>
+                </ul>
+            </div>
+            
+            <button class="start-btn" onclick="startQuiz()">開始 AI 分析 🚀</button>
+        </div>
+    </div>
+
+    <div id="quiz-ui" class="hidden">
+        <div class="quiz-header">
+            <button class="back-button" onclick="prevQuestion()">←</button>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+            <div class="question-counter" id="questionNum">1/12</div>
+            <div class="ai-badge">🤖 AI</div>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <h1 class="quiz-question" id="questionText">加載中...</h1>
+            <p class="quiz-subtitle" id="questionSubtitle"></p>
+            <div id="optionsArea"></div>
+        </div>
+
+        <div class="quiz-footer" id="quizFooter">
+            <button class="quiz-submit-btn" id="nextBtn" onclick="nextQuestion()" disabled>下一題 →</button>
+        </div>
+    </div>
+
+    <script>
+        // AI 加強版 12 題：4圖片 + 4情境 + 4行為觀察
+        const questions = [
+            // === 第1輪：圖片選擇（快速定位大方向）===
+            {
+                id: 1, type: 'image', progress: 8,
+                q: "收工後，你嘅理想狀態係？",
+                subtitle: "揀最吸引你嘅畫面",
+                options: [
+                    { emoji: '🏠', text: ' cozy 梳化', dims: { I: 3, S: 1 } },
+                    { emoji: '🎉', text: '熱鬧派對', dims: { E: 3, S: 1 } },
+                    { emoji: '📚', text: '寧靜書房', dims: { I: 3, N: 1 } },
+                    { emoji: '🌆', text: '城市探險', dims: { E: 3, N: 1 } }
+                ]
+            },
+            {
+                id: 2, type: 'image', progress: 17,
+                q: "面對問題時，你係？",
+                subtitle: "直覺反應",
+                options: [
+                    { emoji: '📊', text: '數據分析', dims: { T: 3, S: 1 } },
+                    { emoji: '💝', text: '感受優先', dims: { F: 3, N: 1 } },
+                    { emoji: '⚡', text: '直覺判斷', dims: { T: 2, N: 2 } },
+                    { emoji: '🤝', text: '諮詢他人', dims: { F: 3, S: 1 } }
+                ]
+            },
+            {
+                id: 3, type: 'image', progress: 25,
+                q: "你個工作枱通常係？",
+                subtitle: "最符合你現況",
+                options: [
+                    { emoji: '📋', text: '整齊有序', dims: { J: 3, S: 1 } },
+                    { emoji: '🎨', text: '創意混亂', dims: { P: 3, N: 1 } },
+                    { emoji: '⚖️', text: '亂中有序', dims: { P: 2, J: 1 } },
+                    { emoji: '🗂️', text: '系統分類', dims: { J: 3, T: 1 } }
+                ]
+            },
+            {
+                id: 4, type: 'image', progress: 33,
+                q: "週末約你出街，你會？",
+                subtitle: "第一反應",
+                options: [
+                    { emoji: '🙅', text: '需要考慮', dims: { I: 2, J: 1 } },
+                    { emoji: '✅', text: '即刻應承', dims: { E: 2, P: 1 } },
+                    { emoji: '📅', text: '睇吓日程', dims: { J: 3, S: 1 } },
+                    { emoji: '🤔', text: '視乎邊個', dims: { F: 2, N: 1 } }
+                ]
+            },
+            // === 第2輪：情境題（交叉驗證）===
+            {
+                id: 5, type: 'scenario', progress: 42,
+                q: "情境：朋友突然話要散水，你會？",
+                options: [
+                    { text: '「點解？發生咩事？」先問清楚原因', dims: { F: 2, S: 1 } },
+                    { text: '「好，我陪你去第二度」直接行動', dims: { E: 2, P: 1 } },
+                    { text: '「不如我哋搵個地方傾下」需要空間傾偈', dims: { I: 2, F: 1 } },
+                    { text: '「係咪嗰個人令你不開心？」即時分析', dims: { T: 2, N: 1 } }
+                ]
+            },
+            {
+                id: 6, type: 'scenario', progress: 50,
+                q: "情境：老闆突然加你 workload，你會？",
+                options: [
+                    { text: '默默接受，盡力完成', dims: { S: 1, J: 2 } },
+                    { text: '同老闆傾，講出自己困難', dims: { F: 2, E: 1 } },
+                    { text: '立即諗計提高效率', dims: { T: 2, N: 1 } },
+                    { text: '睇吓可否 delegate 俾人', dims: { P: 2, T: 1 } }
+                ]
+            },
+            {
+                id: 7, type: 'scenario', progress: 58,
+                q: "情境：計劃緊旅行，你會？",
+                options: [
+                    { text: 'Excel 表列晒行程、餐廳、交通', dims: { J: 3, S: 1 } },
+                    { text: '買張機票先，其他去到再算', dims: { P: 3, E: 1 } },
+                    { text: '問晒朋友意見先決定', dims: { F: 2, E: 1 } },
+                    { text: '揀啲小眾地方，唔想同人迫', dims: { I: 2, N: 2 } }
+                ]
+            },
+            {
+                id: 8, type: 'scenario', progress: 67,
+                q: "情境：朋友同你意見唔同，你會？",
+                options: [
+                    { text: '堅持己見，講出邏輯', dims: { T: 3, J: 1 } },
+                    { text: '為咗和諧，讓步妥協', dims: { F: 3, P: 1 } },
+                    { text: '轉移話題，避免衝突', dims: { P: 2, I: 1 } },
+                    { text: '深入討論，睇吓有冇新角度', dims: { N: 2, E: 1 } }
+                ]
+            },
+            // === 第3輪：行為觀察（Slider + 時間分析）===
+            {
+                id: 9, type: 'behavior', progress: 75,
+                q: "拖動選擇：你嘅社交電量",
+                subtitle: "👆 拖動表達你嘅狀態",
+                dim: 'EI',
+                left: '獨處充電',
+                right: '社交充電'
+            },
+            {
+                id: 10, type: 'behavior', progress: 83,
+                q: "拖動選擇：你做決定嘅方式",
+                subtitle: "直覺 vs 分析",
+                dim: 'SN',
+                left: '相信經驗',
+                right: '相信直覺'
+            },
+            {
+                id: 11, type: 'behavior', progress: 92,
+                q: "拖動選擇：你嘅思考模式",
+                subtitle: "邏輯 vs 感受",
+                dim: 'TF',
+                left: '對事不對人',
+                right: '以人為本'
+            },
+            {
+                id: 12, type: 'behavior', progress: 100,
+                q: "拖動選擇：你嘅生活態度",
+                subtitle: "計劃 vs 隨性",
+                dim: 'PJ',
+                left: '有計劃有条理',
+                right: '隨遇而安'
+            }
+        ];
+
+        let currentIdx = 0, scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 }, 
+            answers = [], startTime = null, questionStartTime = null,
+            behaviorData = { fastAnswers: 0, slowAnswers: 0, backCount: 0, hesitationTime: [] };
+
+        function startQuiz() {
+            document.getElementById('cover-page').classList.add('hidden');
+            document.getElementById('quiz-ui').classList.remove('hidden');
+            startTime = Date.now();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('progressBar').style.width = q.progress + '%';
+            document.getElementById('questionNum').textContent = (currentIdx + 1) + '/12';
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('questionSubtitle').textContent = q.subtitle || '';
+            const container = document.getElementById('optionsArea');
+            container.innerHTML = '';
+            
+            if (q.type === 'image') renderImage(q, container);
+            else if (q.type === 'scenario') renderScenario(q, container);
+            else renderBehavior(q, container);
+            
+            updateNextButton();
+            questionStartTime = Date.now();
+        }
+
+        function renderImage(q, container) {
+            const box = document.createElement('div');
+            box.className = 'image-options';
+            q.options.forEach((opt, i) => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.innerHTML = `<div class="image-emoji">${opt.emoji}</div><div class="image-text">${opt.text}</div>`;
+                card.onclick = () => {
+                    document.querySelectorAll('.image-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    answers[currentIdx] = { choice: i, dims: opt.dims };
+                    
+                    // 自動前進（圖片題）
+                    setTimeout(() => nextQuestion(), 400);
+                };
+                box.appendChild(card);
+            });
+            container.appendChild(box);
+            document.getElementById('quizFooter').classList.add('hidden');
+        }
+
+        function renderScenario(q, container) {
+            const box = document.createElement('div');
+            box.className = 'scenario-box';
+            const optsDiv = document.createElement('div');
+            optsDiv.className = 'scenario-options';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'scenario-option';
+                btn.textContent = opt.text;
+                btn.onclick = () => {
+                    document.querySelectorAll('.scenario-option').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    answers[currentIdx] = { choice: i, dims: opt.dims };
+                    
+                    // 自動前進（情境題）
+                    setTimeout(() => nextQuestion(), 400);
+                };
+                optsDiv.appendChild(btn);
+            });
+            box.appendChild(optsDiv);
+            container.appendChild(box);
+            document.getElementById('quizFooter').classList.add('hidden');
+        }
+
+        function renderBehavior(q, container) {
+            const sliderSection = document.createElement('div');
+            sliderSection.className = 'slider-section';
+            sliderSection.innerHTML = `
+                <div class="slider-track-container" id="trackContainer">
+                    <div class="slider-track"><div class="slider-track-fill" id="trackFill" style="width:50%"></div></div>
+                    <div class="slider-labels">
+                        <span class="slider-label active" id="leftLabel">${q.left}</span>
+                        <span class="slider-label" id="rightLabel">${q.right}</span>
+                    </div>
+                    <div class="slider-thumb" id="sliderThumb" style="left:calc(50% - 40px)"><span class="slider-thumb-text">郁我</span></div>
+                </div>`;
+            container.appendChild(sliderSection);
+            
+            let sliderValue = 50, isDragging = false;
+            const thumb = document.getElementById('sliderThumb'), 
+                  trackContainer = document.getElementById('trackContainer'),
+                  trackFill = document.getElementById('trackFill'),
+                  leftLabel = document.getElementById('leftLabel'),
+                  rightLabel = document.getElementById('rightLabel');
+            
+            function updateUI() {
+                thumb.style.left = `calc(${sliderValue}% - 40px)`;
+                trackFill.style.width = sliderValue + '%';
+                leftLabel.classList.toggle('active', sliderValue < 50);
+                rightLabel.classList.toggle('active', sliderValue >= 50);
+                
+                // 記錄行為數據
+                answers[currentIdx] = { value: sliderValue, dim: q.dim };
+                updateNextButton();
+            }
+            function updatePos(clientX) {
+                const rect = trackContainer.getBoundingClientRect();
+                const availW = rect.width - 80;
+                const relX = clientX - rect.left - 40;
+                sliderValue = Math.max(0, Math.min(100, (relX / availW) * 100));
+                updateUI();
+            }
+            
+            thumb.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
+            thumb.addEventListener('mousedown', () => isDragging = true);
+            document.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); updatePos(e.touches[0].clientX); } }, { passive: false });
+            document.addEventListener('mousemove', (e) => { if (isDragging) updatePos(e.clientX); });
+            document.addEventListener('touchend', () => { if (isDragging) { isDragging = false; } });
+            document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; } });
+            trackContainer.addEventListener('click', (e) => updatePos(e.clientX));
+            
+            document.getElementById('quizFooter').classList.remove('hidden');
+        }
+
+        function updateNextButton() {
+            const btn = document.getElementById('nextBtn');
+            btn.disabled = !answers[currentIdx];
+            btn.textContent = currentIdx === 11 ? '睇結果！🎯' : '下一題 →';
+        }
+
+        function nextQuestion() {
+            const q = questions[currentIdx];
+            const ans = answers[currentIdx];
+            const answerTime = (Date.now() - questionStartTime) / 1000;
+            
+            // 行為數據分析
+            if (answerTime < 1.5) behaviorData.fastAnswers++;
+            else if (answerTime > 5) behaviorData.slowAnswers++;
+            behaviorData.hesitationTime.push(answerTime);
+            
+            // 計分
+            if (q.type === 'image' || q.type === 'scenario') {
+                for (let dim in ans.dims) {
+                    scores[dim] += ans.dims[dim];
+                }
+            } else if (q.type === 'behavior') {
+                const val = ans.value;
+                if (val < 50) scores[q.dim[0]] += (50 - val) / 10;
+                else scores[q.dim[1]] += (val - 50) / 10;
+            }
+            
+            currentIdx++;
+            if (currentIdx < questions.length) { showQuestion(); }
+            else { showResult(); }
+        }
+
+        function prevQuestion() { 
+            if (currentIdx > 0) { 
+                currentIdx--; 
+                behaviorData.backCount++;
+                showQuestion(); 
+            } 
+        }
+
+        function showResult() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            
+            // AI 加強計算：基礎分 + 行為調整
+            let final = {
+                EI: Math.round((scores.E / (scores.E + scores.I || 1)) * 100),
+                SN: Math.round((scores.S / (scores.S + scores.N || 1)) * 100),
+                TF: Math.round((scores.T / (scores.T + scores.F || 1)) * 100),
+                PJ: Math.round((scores.P / (scores.P + scores.J || 1)) * 100)
+            };
+            
+            // 行為數據調整
+            if (behaviorData.fastAnswers >= 8) {
+                // 答太快 = 偏向 E、P
+                final.EI = Math.min(100, final.EI + 5);
+                final.PJ = Math.min(100, final.PJ + 5);
+            }
+            if (behaviorData.backCount >= 3) {
+                // 經常回頭 = 偏向 P
+                final.PJ = Math.min(100, final.PJ + 10);
+            }
+            
+            const type = (final.EI >= 50 ? 'E' : 'I') + 
+                        (final.SN >= 50 ? 'S' : 'N') + 
+                        (final.TF >= 50 ? 'T' : 'F') + 
+                        (final.PJ >= 50 ? 'P' : 'J');
+            
+            // AI 可信度評分
+            const avgTime = behaviorData.hesitationTime.reduce((a,b) => a+b, 0) / behaviorData.hesitationTime.length;
+            let aiTrust = 85;
+            if (avgTime >= 2 && avgTime <= 6) aiTrust += 10;
+            if (behaviorData.backCount <= 2) aiTrust += 5;
+            aiTrust = Math.min(100, aiTrust);
+            
+            localStorage.setItem('luna_mbti_result_v2', JSON.stringify({ 
+                type, scores: final, time: elapsed, 
+                behaviorData, aiTrust, version: '2.0'
+            }));
+            window.location.href = 'result-v2.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI分析結果 | 香港奇怪職業 v2.0 🇭🇰</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .container {
+            background: white; border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-width: 600px; width: 100%; padding: 40px 30px; text-align: center;
+        }
+        .ai-badge { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 6px 15px; border-radius: 20px; font-size: 12px; display: inline-block; margin-bottom: 15px; }
+        .result-header { margin-bottom: 25px; }
+        .type-code { font-size: 56px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .funny-job { font-size: 26px; font-weight: 800; color: #333; background: linear-gradient(135deg, #f5f7fa, #c3cfe2); padding: 15px; border-radius: 20px; display: inline-block; margin-bottom: 20px; border: 3px dashed #667eea; }
+        .job-desc { font-size: 17px; color: #555; line-height: 1.6; margin-bottom: 25px; text-align: left; background: #f8f9ff; padding: 20px; border-radius: 20px; }
+        
+        /* AI 分析區域 */
+        .ai-analysis { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; padding: 20px; margin-bottom: 25px; text-align: left; }
+        .ai-analysis h3 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .ai-metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 14px; }
+        .ai-metric:last-child { border-bottom: none; }
+        .trust-score { font-size: 28px; font-weight: 900; text-align: center; margin-top: 15px; }
+        .trust-label { font-size: 14px; text-align: center; opacity: 0.9; }
+        
+        /* 進度條 */
+        .dimension-bar { margin-bottom: 15px; text-align: left; }
+        .bar-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        .bar-bg { height: 14px; background: #eee; border-radius: 10px; overflow: hidden; display: flex; position: relative; }
+        .bar-left { height: 100%; background: linear-gradient(90deg, #ff6b6b, #ff8e8e); border-radius: 10px 0 0 10px; }
+        .bar-right { height: 100%; background: linear-gradient(90deg, #4ecdc4, #44a3aa); border-radius: 0 10px 10px 0; }
+        .bar-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: white; z-index: 10; }
+        
+        .btn { width: 100%; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: 800; cursor: pointer; margin-top: 25px; }
+        .compare-btn { width: 100%; padding: 15px; background: #f0f0f0; color: #667eea; border: 2px solid #667eea; border-radius: 20px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        
+        .stats-box { background: #f0f0f0; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        .stat-item { display: inline-block; margin: 5px 10px; font-size: 14px; color: #666; }
+        .stat-value { font-weight: 900; color: #333; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ai-badge">🤖 AI 加強版 v2.0</div>
+        
+        <div class="result-header">
+            <h1 class="type-code" id="type-code">----</h1>
+            <div class="funny-job" id="funny-job">載入中...</div>
+        </div>
+
+        <div class="job-desc" id="job-desc"></div>
+
+        <div class="ai-analysis">
+            <h3>🧠 AI 行為分析</h3>
+            <div class="ai-metric">
+                <span>平均答題時間</span>
+                <span id="avg-time">--秒</span>
+            </div>
+            <div class="ai-metric">
+                <span>快速作答次數</span>
+                <span id="fast-count">--</span>
+            </div>
+            <div class="ai-metric">
+                <span>回頭修改次數</span>
+                <span id="back-count">--</span>
+            </div>
+            <div class="trust-score" id="trust-score">--%</div>
+            <div class="trust-label" id="trust-label">AI 可信度</div>
+        </div>
+
+        <div class="stats-box">
+            <div class="stat-item">⏱️ 用時：<span class="stat-value" id="time-stat">--:--</span></div>
+        </div>
+
+        <div id="stats"></div>
+
+        <button class="btn" onclick="location.href='ai-enhanced.html'">🔄 再測一次</button>
+        <button class="compare-btn" onclick="location.href='index.html'">↩️ 返回經典版</button>
+    </div>
+
+    <script>
+        const jobMap = {
+            "ESTJ": [
+                { name: "中環IFC天台管理員", desc: "你份人極度注重秩序，連IFC有幾多粒螺絲你都清清楚楚。你最叻叫人唔好跳樓（或者叫佢哋排隊跳）。" },
+                { name: "港鐵列車到站時間預言家", desc: "你對時間有絕對掌控。你嘅腦入面有一個計時器，可以準確預測下一架車幾時到。" },
+                { name: "立法會點人數專員", desc: "你係數人頭嘅天才。就算成個議事廳亂到好似街市咁，你都可以一眼數晒有幾多人舉咗手。" },
+                { name: "公園晨運大媽領隊", desc: "你係天生的領袖。每日朝早6點，你就會帶領一班大媽喺公園做早操，動作要整齊到好似閱兵咁。" }
+            ],
+            "ISTJ": [
+                { name: "叮叮車落車站廣播員", desc: "你係最可靠嘅齒輪。雖然而家有電腦，但你堅持要用人聲報站，因為你覺得0.1秒嘅誤差都係罪。" },
+                { name: "圖書館書脊對齊專員", desc: "你對細節有強迫症。你會喺閂館之後，將所有書推到同一個深度，令到書架睇落好似用尺量過咁。" },
+                { name: "電梯𨋢𨋢聲分類員", desc: "你可以憑聲音分辨出邊部電梯係邊個牌子。搭𨋢之前你要聽清楚先肯入去。" },
+                { name: "銀行排隊紙管理人員", desc: "你會自發咁喺銀行維持秩序。雖然你唔係職員，但你會叫大家排好隊，仲會檢查邊個冇攞籌。" }
+            ],
+            "ESFJ": [
+                { name: "街市送棵蔥親善大使", desc: "你嘅社交能力係天賦。你可以令到全街市嘅阿姐都送蔥俾你，仲要話埋俾你聽邊檔啲魚最鮮。" },
+                { name: "搭枱飲茶氣氛擔當", desc: "你係搭枱專家。無論邊張枱有幾逼，你都可以同陌生人傾到偈，仲會主動問人食咗飽未。" },
+                { name: "屋企人Whatsapp群組管理員", desc: "你係家族嘅核心。每日你都會喺family group傳長輩圖，仲要確保人人都要覆+1。" },
+                { name: "商場美容產品試用員", desc: "你唔識say no。就算明知係hard sell，你都會好有耐性咁聽晒成個介紹，仲會買支洗面乳先走。" }
+            ],
+            "ISFJ": [
+                { name: "茶記「今日冇乜嘢食」通知員", desc: "你體貼但悲觀。你總係喺客落單前，溫柔咁話俾佢聽：常餐、特餐、快餐全部賣晒，得返火腿通。" },
+                { name: "辦公室飲水機換水專員", desc: "你默默耕耘。當你發現水機冇水，你會二話不說就換，但係唔會同任何人講。" },
+                { name: "朋友出街幫大家執垃圾專員", desc: "你總係隨身帶住膠袋。食完野你會主動幫所有人執垃圾，仲要分類回收。" },
+                { name: "暗戀對象社交媒體偵探", desc: "你會記得對方三年前post過嘅嘢。你對佢嘅生活細節瞭如指掌，但係永遠都唔會同佢講。" }
+            ],
+            "ESTP": [
+                { name: "旺角西洋菜街賣唱經紀", desc: "你天生係個Sale。就算嗰個人唱到好似殺雞咁，你都有辦法令路人覺得呢個係「靈魂音樂」。" },
+                { name: "即興街頭魔術師（冇練習過）", desc: "你敢死隊。你會突然喺街邊表演魔術，雖然你完全冇練習過，但係你嘅自信令到人人都信你真係識。" },
+                { name: "限時搶購排隊專業戶", desc: "你係排隊專家。為咗買限量波鞋，你可以瞓街三日三夜，仲會同隔離位一齊打麻雀殺時間。" },
+                { name: "派對遊戲氣氛擔當", desc: "你係破冰專家。無論幾尷尬嘅場面，你都可以提出玩真心話大冒險，仲要揀最大膽嘅懲罰俾人。" }
+            ],
+            "ISTP": [
+                { name: "洗冷氣機但唔裝返粒螺絲專家", desc: "你手腳極快，技術高超。你唯一嘅堅持係：每部冷氣機都應該多咗一粒唔知用嚟做乜嘅螺絲。" },
+                { name: "單車維修神秘俠客", desc: "你會突然出現喺人哋爆軚嘅地方，修完之後唔收錢就走，連名都唔留。" },
+                { name: "IKEA傢俬逆向組裝師", desc: "你唔睇說明書。你會憑直覺組裝傢俬，多出嚟嘅零件你會話係「備用」。" },
+                { name: "商場VR遊戲機試玩達人", desc: "你識晒所有機舖嘅漏洞。你可以用一個幣玩成個鐘，仲要教隔離小朋友點樣卡bug。" }
+            ],
+            "ESFP": [
+                { name: "尖沙咀海旁影相排隊指揮官", desc: "你充滿活力。你可以令到50個遊客乖乖地排隊同個鐘樓影相，仲要教埋佢哋擺邊個Pose顯瘦。" },
+                { name: "街頭直播跳舞機挑戰者", desc: "你一聽到音樂就會跳。無論幾多人望住，你都可以喺街邊跟着手機跳舞機Apps跳舞。" },
+                { name: "K房高音擔當（唔識唱嗰啲）", desc: "你係氣氛組。就算你把聲係鴨仔咁，你都會搶住唱《青藏高原》，仲要逼全場一齊唱。" },
+                { name: "商場推銷員剋星", desc: "你識搞氣氛。當有人想sell你嘢，你會反過來同佢傾偈，搞到最後佢請你食飯。" }
+            ],
+            "ISFP": [
+                { name: "長洲大魚蛋試食評論家", desc: "你對美感有追求。你可以用500字形容一粒魚蛋嘅彈性同埋同沙爹醬之間嘅愛情故事。" },
+                { name: "維園阿伯賞鳥藝術家", desc: "你會帶住畫板去公園。你唔係畫鳥，你係畫鳥嘅靈魂，仲會同阿伯講解你嘅創作理念。" },
+                { name: "港式奶茶拉花師（自學）", desc: "你喺屋企用練奶練拉花。你覺得港式奶茶都應該有latte art，雖然無人care。" },
+                { name: "街頭貓咪攝影師", desc: "你手機入面有9999張唔同貓嘅相同。你記得晒每隻貓喺邊度出沒，仲幫佢哋改咗名。" }
+            ],
+            "ENTJ": [
+                { name: "共享單車隨便泊首席執行官", desc: "你係天生領袖。你嘅目標係將所有單車泊到阻住晒成條行人路，嚟展示你對城市空間嘅統治權。" },
+                { name: "升降機開門鍵操控員", desc: "你係控制狂。你會霸住升降機個開門掣，逼所有人一定要聽你指示先入去。" },
+                { name: "麥當勞自助點餐機指導員", desc: "你會主動教陌生人點用機。雖然人哋冇問你，但係你覺得你嘅方法係最高效。" },
+                { name: "公園大媽廣場舞改革家", desc: "你唔滿意現有嘅舞步。你會喺大媽隊度推行新舞步，仲要開會討論隊形嘅優化方案。" }
+            ],
+            "INTJ": [
+                { name: "MTR研究邊個門口出最快戰略家", desc: "你嘅腦入面係一張3D地圖。邊架車、邊個門口、邊條電梯，你已經計好晒點樣可以用最快速度衝出閘。" },
+                { name: "超市優惠價格計算機", desc: "你可以一眼睇出邊個優惠最抵。你會喺腦入面run晒所有組合，連收銀員都冇你快。" },
+                { name: "港島巴士路線優化顧問", desc: "你覺得現有嘅巴士路線全部都係垃圾。你已經設計好晒一張全新嘅路線圖，可以慳一半時間。" },
+                { name: "茶餐廳上菜流程分析師", desc: "你會記錄每次食飯嘅上菜時間。你已經寫好晒報告，分析點解凍檸茶永遠最慢上。" }
+            ],
+            "ENTP": [
+                { name: "連登「唔同意請負評」樓主", desc: "你鍾意挑戰權威。你每日嘅樂趣就係出個Post俾人鬧500樓，然後你喺電腦面前笑笑口飲住可樂回覆。" },
+                { name: "辯論比賽永遠嘅反方", desc: "你為辯論而生存。就算你心底同意對方，你都會搵到100個理由反駁，而且講到好似真係好有道理咁。" },
+                { name: "新式茶餐廳發明家", desc: "你諗到將菠蘿包同芝士漢堡結合。你覺得呢個係美食嘅未來，雖然食過嘅人都話唔好食。" },
+                { name: "街坊傾偈抬杆專員", desc: "你專門喺公園同阿伯傾偈。無論佢講乜，你都會講「其實又唔係咁」，然後講晒你嘅理論。" }
+            ],
+            "INTP": [
+                { name: "研究點樣用$10食到三餸飯博士", desc: "你熱愛理論分析。你已經寫咗篇論文，論證邊區、邊間、邊個時段可以用最科學嘅方法攞到最多嘅餸。" },
+                { name: "港鐵廣播聲紋分析師", desc: "你發現「請勿靠近車門」有6個唔同版本。你會記錄晒邊個站用邊個版本，仲諗緊點解會咁。" },
+                { name: "平行宇宙香港交通規劃師", desc: "你喺腦入面建構咗一個完美嘅香港。你覺得如果當年地鐵路線咁樣起，宜家就唔會塞車。" },
+                { name: "便利店飲品組合化學家", desc: "你試過晒所有汽水溝溝。你已經發現咗可樂溝芬達嘅黃金比例，仲寫咗公式。" }
+            ],
+            "ENFJ": [
+                { name: "譚仔話「阿姐我想加湯」外交官", desc: "你極具感染力。你是唯一一個可以令譚仔阿姐心甘情願幫你加湯，仲要送多兩嚿雞肉俾你嘅傳奇人物。" },
+                { name: "失業朋友職業生涯導師", desc: "你係天生嘅輔導員。朋友一失業你就會出現，幫佢改CV、模擬面試，仲會煮飯俾佢食。" },
+                { name: "街坊糾紛調解達人", desc: "你係和事佬。當樓上樓下嘈交，你會自動上門做中間人，搞到最後兩家人請你食飯多謝你。" },
+                { name: "朋友失戀情緒急救員", desc: "你手機24小時standby。無論幾夜，只要朋友send個喊嘅emoji，你就會即刻call佢傾偈。" }
+            ],
+            "INFJ": [
+                { name: "深夜陪路邊石獅子傾偈心靈導師", desc: "你有深度同理心。你覺得銀行門口嗰對石獅子其實好寂寞，所以你會喺凌晨3點同佢哋討論人生意義。" },
+                { name: "公園流浪貓心靈治療師", desc: "你會同貓傾偈。你覺得每隻貓都有佢嘅故事，你會喺佢哋耳邊講悄悄話，幫佢哋解開心結。" },
+                { name: "遊客背後故事觀察員", desc: "你喺Cafe坐成日。你會望住啲遊客，喺腦入面寫晒佢哋嘅背景故事，仲會為佢哋編一個悲慘嘅過去。" },
+                { name: "舊書店藏書靈魂溝通者", desc: "你覺得每本書都有靈魂。你會喺書店執起本舊書，同佢講「唔好擔心，我會帶你返屋企」。" }
+            ],
+            "ENFP": [
+                { name: "旺角天橋派傳單但冇人理藝術家", desc: "你熱情洋溢。就算100個人行過都冇人接你份傳單，你依然可以對住第101個人笑得好燦爛。" },
+                { name: " suddenKTV開咪擔當", desc: "你係行走的點唱機。無論幾尷尬嘅場面，你都會突然高歌一曲，搞到全場一齊唱。" },
+                { name: "計劃永遠趕唔切嘅旅行家", desc: "你成日講要去旅行。你plan咗30個行程，但係每次出發前一日都會改變主意去第度。" },
+                { name: "朋友生日驚喜搞手（過度熱情版）", desc: "你會提前三個月準備。你會秘密聯絡晒佢所有小學同學，仲要整個flashmob，雖然壽主想低調。" }
+            ],
+            "INFP": [
+                { name: "巴士上層最後一排寫詩浪子", desc: "你係個理想主義者。當架巴士塞緊紅隧嗰陣，你已經喺腦入面寫咗三首關於海洋同自由嘅現代詩。" },
+                { name: "雲吞麪熱氣感悟詩人", desc: "你食野好慢。你會對住碗麪發呆半個鐘，因為你覺得每一條麪都有佢嘅故事。" },
+                { name: "旺角行人專區觀雲者", desc: "你會喺鬧市中央突然停低。你唔係阻住人，你係喺欣賞「人類嘅流動」，仲會寫低你嘅感受。" },
+                { name: "便利店便當靈魂安慰師", desc: "你會對住個便當講嘢。你覺得冇人買嘅便當好慘，所以你會買晒佢哋，然後同佢哋講「你哋都值得被愛」。" }
+            ]
+        };
+
+        window.onload = function() {
+            const raw = localStorage.getItem('luna_mbti_result_v2');
+            if (!raw) { location.href='ai-enhanced.html'; return; }
+            const data = JSON.parse(raw);
+            const jobs = jobMap[data.type];
+            const randomJob = jobs[Math.floor(Math.random() * jobs.length)];
+            
+            document.getElementById('type-code').innerText = data.type;
+            document.getElementById('funny-job').innerText = randomJob.name;
+            document.getElementById('job-desc').innerText = randomJob.desc;
+
+            const mins = String(Math.floor(data.time / 60)).padStart(2, '0');
+            const secs = String(data.time % 60).padStart(2, '0');
+            document.getElementById('time-stat').textContent = `${mins}:${secs}`;
+            
+            // AI 分析數據
+            const bd = data.behaviorData;
+            const avgTime = bd.hesitationTime.reduce((a,b) => a+b, 0) / bd.hesitationTime.length;
+            document.getElementById('avg-time').textContent = avgTime.toFixed(1) + '秒';
+            document.getElementById('fast-count').textContent = bd.fastAnswers + '次';
+            document.getElementById('back-count').textContent = bd.backCount + '次';
+            document.getElementById('trust-score').textContent = data.aiTrust + '%';
+            
+            // 可信度標籤
+            let trustLabel = '';
+            if (data.aiTrust >= 90) trustLabel = '十分之高';
+            else if (data.aiTrust >= 75) trustLabel = '都還可以';
+            else trustLabel = '下次認真啲';
+            document.getElementById('trust-label').textContent = 'AI 可信度：' + trustLabel;
+            
+            const dims = [
+                { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向' },
+                { n: '資訊 S/N', v: data.scores.SN, l: '實感', r: '直覺' },
+                { n: '決策 T/F', v: data.scores.TF, l: '思考', r: '情感' },
+                { n: '風格 P/J', v: data.scores.PJ, l: '感知', r: '判斷' }
+            ];
+
+            const stats = document.getElementById('stats');
+            dims.forEach(d => {
+                const leftW = d.v;
+                const rightW = 100 - d.v;
+                stats.innerHTML += `
+                    <div class="dimension-bar">
+                        <div class="bar-label"><span>${d.l} (${d.v}%)</span><span>${d.r} (${100-d.v}%)</span></div>
+                        <div class="bar-bg">
+                            <div class="bar-left" style="width:${leftW}%"></div>
+                            <div class="bar-center"></div>
+                            <div class="bar-right" style="width:${rightW}%"></div>
+                        </div>
+                    </div>`;
+            });
+        };
+    </script>
+</body>
+</html>
