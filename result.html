@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冒險結果 | 香港奇怪職業 🇭🇰</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f0f2f5; min-height: 100vh; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .container {
+            background: white; border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 600px; width: 100%; padding: 40px 30px; text-align: center;
+        }
+        .result-header { margin-bottom: 30px; }
+        .type-code { font-size: 48px; font-weight: 900; color: #8A2BE2; margin-bottom: 10px; }
+        .funny-job { font-size: 28px; font-weight: 800; color: #333; background: #fff0f5; padding: 15px; border-radius: 20px; display: inline-block; margin-bottom: 20px; border: 3px dashed #FF69B4; }
+        .job-desc { font-size: 18px; color: #666; line-height: 1.6; margin-bottom: 30px; text-align: left; background: #f8f9ff; padding: 25px; border-radius: 20px; }
+        .dimension-bar { margin-bottom: 15px; text-align: left; }
+        .bar-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        .bar-bg { height: 12px; background: #eee; border-radius: 10px; overflow: hidden; display: flex; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #36d1dc, #5b86e5); transition: 1s ease; }
+        .btn { width: 100%; padding: 20px; background: #8A2BE2; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: 800; cursor: pointer; margin-top: 30px; }
+        .btn:hover { background: #7B1FA2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-header">
+            <p style="color:#888; font-weight:bold">根據 Luna 演算法，你係...</p>
+            <h1 class="type-code" id="type-code">----</h1>
+            <div class="funny-job" id="funny-job">載入中...</div>
+        </div>
+
+        <div class="job-desc" id="job-desc"></div>
+
+        <div id="stats"></div>
+
+        <button class="btn" onclick="location.href='index.html'">🔄 再次挑戰</button>
+    </div>
+
+    <script>
+        const jobMap = {
+            "ESTJ": { name: "中環 IFC 天台管理員", desc: "你份人極度注重秩序，連 IFC 有幾多粒螺絲你都清清楚楚。你最叻叫人唔好跳樓（或者叫佢哋排隊跳）。" },
+            "ISTJ": { name: "叮叮車落車站廣播員", desc: "你係最可靠嘅齒輪。雖然而家有電腦，但你堅持要用人聲報站，因為你覺得 0.1 秒嘅誤差都係罪。" },
+            "ESFJ": { name: "街市送棵蔥親善大使", desc: "你嘅社交能力係天賦。你可以令到全街市嘅阿姐都送蔥俾你，仲要話埋俾你聽邊檔啲魚最鮮。" },
+            "ISFJ": { name: "茶記「今日冇乜嘢食」通知員", desc: "你體貼但悲觀。你總係喺客落單前，溫柔咁話俾佢聽：常餐、特餐、快餐全部賣晒，得返火腿通。" },
+            "ESTP": { name: "旺角西洋菜街賣唱經紀", desc: "你天生係個 Sale。就算嗰個人唱到好似殺雞咁，你都有辦法令路人覺得呢個係「靈魂音樂」。" },
+            "ISTP": { name: "洗冷氣機但唔裝返粒螺絲專家", desc: "你手腳極快，技術高超。你唯一嘅堅持係：每部冷氣機都應該多咗一粒唔知用嚟做乜嘅螺絲。" },
+            "ESFP": { name: "尖沙咀海旁影相排隊指揮官", desc: "你充滿活力。你可以令到 50 個遊客乖乖地排隊同個鐘樓影相，仲要教埋佢哋擺邊個 Pose 顯瘦。" },
+            "ISFP": { name: "長洲大魚蛋試食評論家", desc: "你對美感有追求。你可以用 500 字形容一粒魚蛋嘅彈性同埋同沙爹醬之間嘅愛情故事。" },
+            "ENTJ": { name: "共享單車隨便泊首席執行官", desc: "你係天生領袖。你嘅目標係將所有單車泊到阻住晒成條行人路，嚟展示你對城市空間嘅統治權。" },
+            "INTJ": { name: "MTR 研究邊個門口出最快戰略家", desc: "你嘅腦入面係一張 3D 地圖。邊架車、邊個門口、邊條電梯，你已經計好晒點樣可以用最快速度衝出閘。" },
+            "ENTP": { name: "連登「唔同意請負評」樓主", desc: "你鍾意挑戰權威。你每日嘅樂趣就係出個 Post 俾人鬧 500 樓，然後你喺電腦面前笑笑口飲住可樂回覆。" },
+            "INTP": { name: "研究點樣用 $10 食到三餸飯博士", desc: "你熱愛理論分析。你已經寫咗篇論文，論證邊區、邊間、邊個時段可以用最科學嘅方法攞到最多嘅餸。" },
+            "ENFJ": { name: "譚仔話「阿姐我想加湯」外交官", desc: "你極具感染力。你是唯一一個可以令譚仔阿姐心甘情願幫你加湯，仲要送多兩嚿雞肉俾你嘅傳奇人物。" },
+            "INFJ": { name: "深夜陪路邊石獅子傾偈心靈導師", desc: "你有深度同理心。你覺得銀行門口嗰對石獅子其實好寂寞，所以你會喺凌晨 3 點同佢哋討論人生意義。" },
+            "ENFP": { name: "旺角天橋派傳單但冇人理藝術家", desc: "你熱情洋溢。就算 100 個人行過都冇人接你份傳單，你依然可以對住第 101 個人笑得好燦爛。" },
+            "INFP": { name: "巴士上層最後一排寫詩浪子", desc: "你係個理想主義者。當架巴士塞緊紅隧嗰陣，你已經喺腦入面寫咗三首關於海洋同自由嘅現代詩。" }
+        };
+
+        window.onload = function() {
+            const raw = localStorage.getItem('luna_mbti_result');
+            if (!raw) { location.href='index.html'; return; }
+            const data = JSON.parse(raw);
+            const job = jobMap[data.type] || { name: "隱世高人", desc: "你嘅性格太過奇特，連 Luna 都搵唔到對應嘅香港職業！" };
+
+            document.getElementById('type-code').innerText = data.type;
+            document.getElementById('funny-job').innerText = job.name;
+            document.getElementById('job-desc').innerText = job.desc;
+
+            const dims = [
+                { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向' },
+                { n: '資訊 S/N', v: data.scores.SN, l: '實感', r: '直覺' },
+                { n: '決策 T/F', v: data.scores.TF, l: '思考', r: '情感' },
+                { n: '風格 P/J', v: data.scores.PJ, l: '感知', r: '判斷' }
+            ];
+
+            const stats = document.getElementById('stats');
+            dims.forEach(d => {
+                stats.innerHTML += `
+                    <div class="dimension-bar">
+                        <div class="bar-label"><span>${d.l} (${d.v}%)</span><span>${d.r} (${100-d.v}%)</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:${d.v}%"></div></div>
+                    </div>`;
+            });
+        };
+    </script>
+</body>
+</html>
