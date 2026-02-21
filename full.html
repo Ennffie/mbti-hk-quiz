@@ -187,10 +187,14 @@
             },
             // T/F 維度
             {
-                id: 7, type: 'grid', layout: 'col', dim: 'TF', progress: 28,
+                id: 7, type: 'slider', dim: 'TF', progress: 28,
                 q: "朋友俾人呃咗錢，你第一時間：",
-                A: { emoji: '🧩', text: '笑佢笨\n(分析點解被呃)' },
-                B: { emoji: '❤️', text: '安慰佢\n(一齊鬧個騙子)' }
+                options: [
+                    { emoji: '🧩', text: '笑佢笨', desc: '分析點解被呃' },
+                    { emoji: '⚖️', text: '理性分析', desc: '研究邊度出錯' },
+                    { emoji: '🤗', text: '安慰佢', desc: '一齊鬧個騙子' },
+                    { emoji: '❤️', text: '情感支持', desc: '陪佢度過難關' }
+                ]
             },
             {
                 id: 8, type: 'grid', layout: 'row', dim: 'TF', progress: 32,
