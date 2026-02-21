@@ -158,6 +158,9 @@
         }
 
         function renderSlider(q, container) {
+            // 預設選第一個選項，令「下一題」按鈕可直接撳
+            answers[currentIdx] = { value: 0, index: 0 };
+            
             const display = document.createElement('div');
             display.className = 'selected-display';
             display.innerHTML = `<div class="selected-emoji" id="selEmoji">${q.options[0].emoji}</div><div class="selected-text" id="selText">${q.options[0].text}</div>`;
