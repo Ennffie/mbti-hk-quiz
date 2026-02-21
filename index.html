@@ -64,7 +64,8 @@
         .selected-emoji { font-size: 40px; line-height: 1; margin-bottom: 8px; }
         .selected-text { font-size: 18px; font-weight: 700; color: #2c3e50; }
         
-        .quiz-footer { padding: 24px 20px 40px; display: none; }
+        .quiz-footer { padding: 24px 20px 40px; }
+        .quiz-footer.hidden { display: none; }
         .quiz-submit-btn { 
             width: 100%; padding: 18px 24px; background: #E67E22; color: white; 
             border: none; border-radius: 14px; font-size: 20px; font-weight: 700; 
@@ -130,7 +131,7 @@
             <div id="optionsArea"></div>
         </div>
 
-        <div class="quiz-footer">
+        <div class="quiz-footer" id="quizFooter">
             <button class="quiz-submit-btn" id="nextBtn" onclick="nextQuestion()" disabled>下一題 →</button>
         </div>
     </div>
@@ -424,9 +425,12 @@
             thumb.addEventListener('mousedown', () => isDragging = true);
             document.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); updatePos(e.touches[0].clientX); } }, { passive: false });
             document.addEventListener('mousemove', (e) => { if (isDragging) updatePos(e.clientX); });
-            document.addEventListener('touchend', () => { if (isDragging) { isDragging = false; setTimeout(() => nextQuestion(), 400); } });
-            document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; setTimeout(() => nextQuestion(), 400); } });
-            trackContainer.addEventListener('click', (e) => { updatePos(e.clientX); setTimeout(() => nextQuestion(), 400); });
+            document.addEventListener('touchend', () => { if (isDragging) { isDragging = false; } });
+            document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; } });
+            trackContainer.addEventListener('click', (e) => updatePos(e.clientX));
+            
+            // Slider 顯示下一題按鈕
+            document.getElementById('quizFooter').classList.remove('hidden');
         }
 
         function renderGrid(q, container) {
@@ -451,6 +455,9 @@
                 box.appendChild(card);
             });
             container.appendChild(box);
+            
+            // Grid 隱藏下一題按鈕
+            document.getElementById('quizFooter').classList.add('hidden');
         }
 
         function updateNextButton() {
