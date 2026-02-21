@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收工充電測驗 | MBTI 🌙</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #E67E22 0%, #c0392b 100%);
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        .quiz-header {
+            display: flex; align-items: center; padding: 16px; gap: 16px;
+        }
+        .back-button {
+            background: rgba(255, 255, 255, 0.9); border: none; width: 40px; height: 40px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 20px;
+        }
+        .progress-bar { flex: 1; height: 8px; background: rgba(255, 255, 255, 0.3); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: white; border-radius: 4px; width: 25%; }
+        .header-placeholder { width: 40px; }
+        
+        .quiz-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+        .quiz-question { font-size: 28px; font-weight: 700; color: white; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        
+        .selected-option-container { display: flex; justify-content: center; align-items: center; min-height: 160px; }
+        .selected-option-card { background: white; border-radius: 20px; padding: 32px 40px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); min-width: 200px; }
+        .selected-emoji { font-size: 72px; line-height: 1; margin-bottom: 16px; }
+        .selected-text { font-size: 24px; font-weight: 700; color: #2c3e50; margin-bottom: 8px; }
+        .selected-description { font-size: 16px; color: #7f8c8d; }
+        
+        .slider-section { padding: 8px 16px 0; }
+        .slider-track-container { position: relative; height: 60px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; padding: 0 40px; }
+        .slider-track { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.3); border-radius: 6px; position: relative; overflow: hidden; }
+        .slider-track-fill { height: 100%; background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.8) 100%); border-radius: 6px; width: 0%; transition: width 0.1s; }
+        .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; }
+        .slider-label { font-size: 14px; color: rgba(255, 255, 255, 0.6); font-weight: 600; }
+        .slider-label.active { color: white; transform: scale(1.2); }
+        
+        .slider-thumb {
+            position: absolute; top: 50%; transform: translateY(-50%); width: 80px; height: 48px;
+            background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3); cursor: grab; user-select: none; left: 0;
+        }
+        .slider-thumb.dragging { cursor: grabbing; transform: translateY(-50%) scale(1.1); }
+        .slider-thumb-text { font-size: 16px; font-weight: 700; color: #E67E22; }
+        
+        .slider-hint { text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-top: 2px; }
+        
+        .options-preview { display: flex; justify-content: center; gap: 16px; padding: 0 16px 4px; }
+        .option-dot { width: 56px; height: 56px; border-radius: 16px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; }
+        .option-dot.active { background: white; transform: scale(1.1); border-color: #E67E22; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+        .dot-emoji { font-size: 28px; }
+        
+        .quiz-footer { padding: 24px 20px 20px; margin-bottom: 220px; }
+        .quiz-submit-btn { width: 100%; padding: 18px 24px; background: #E67E22; color: white; border: none; border-radius: 14px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(230, 126, 34, 0.4); }
+    </style>
+</head>
+<body>
+    <div class="quiz-header">
+        <button class="back-button" onclick="history.back()">←</button>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="header-placeholder"></div>
+    </div>
+
+    <div class="quiz-content">
+        <h1 class="quiz-question">收工之後，你通常會點樣「充電」？</h1>
+
+        <div class="selected-option-container">
+            <div class="selected-option-card">
+                <div class="selected-emoji" id="selectedEmoji">📚</div>
+                <div class="selected-text" id="selectedText">靜靜睇書</div>
+                <div class="selected-description" id="selectedDesc">享受一個人嘅寧靜時光</div>
+            </div>
+        </div>
+
+        <div class="slider-section">
+            <div class="slider-track-container" id="trackContainer">
+                <div class="slider-track"><div class="slider-track-fill" id="trackFill"></div></div>
+                <div class="slider-labels">
+                    <span class="slider-label active">I</span>
+                    <span class="slider-label">II</span>
+                    <span class="slider-label">III</span>
+                    <span class="slider-label">IV</span>
+                </div>
+                <div class="slider-thumb" id="sliderThumb"><span class="slider-thumb-text">郁我</span></div>
+            </div>
+            <p class="slider-hint">👆 拖動控制器選擇你的風格</p>
+        </div>
+
+        <div class="options-preview">
+            <div class="option-dot active" onclick="setSlider(0)"><span class="dot-emoji">📚</span></div>
+            <div class="option-dot" onclick="setSlider(33)"><span class="dot-emoji">🏃</span></div>
+            <div class="option-dot" onclick="setSlider(66)"><span class="dot-emoji">👥</span></div>
+            <div class="option-dot" onclick="setSlider(100)"><span class="dot-emoji">🎮</span></div>
+        </div>
+    </div>
+
+    <div class="quiz-footer">
+        <button class="quiz-submit-btn" onclick="location.href='quiz-room.html'">決定了！🎯</button>
+    </div>
+
+    <script>
+        const options = [
+            { emoji: '📚', text: '靜靜睇書', desc: '享受一個人嘅寧靜時光' },
+            { emoji: '🏃', text: '做運動', desc: '用汗水釋放壓力' },
+            { emoji: '👥', text: '同朋友聚會', desc: '同好姊妹/好兄弟傾偈' },
+            { emoji: '🎮', text: '打機追劇', desc: '沉浸喺自己嘅世界' }
+        ];
+        
+        let sliderValue = 0;
+        let isDragging = false;
+        const thumb = document.getElementById('sliderThumb');
+        const trackContainer = document.getElementById('trackContainer');
+        const trackFill = document.getElementById('trackFill');
+        
+        function updateUI() {
+            const index = Math.min(Math.floor((sliderValue / 100) * 4), 3);
+            document.getElementById('selectedEmoji').textContent = options[index].emoji;
+            document.getElementById('selectedText').textContent = options[index].text;
+            document.getElementById('selectedDesc').textContent = options[index].desc;
+            
+            thumb.style.left = `calc(${sliderValue}% - ${sliderValue * 0.8}px)`;
+            trackFill.style.width = sliderValue + '%';
+            
+            document.querySelectorAll('.option-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.slider-label').forEach((label, i) => {
+                label.classList.toggle('active', i === index);
+            });
+        }
+        
+        function setSlider(val) {
+            sliderValue = val;
+            updateUI();
+        }
+        
+        function updateFromPosition(clientX) {
+            const rect = trackContainer.getBoundingClientRect();
+            const availableWidth = rect.width - 80;
+            const relativeX = clientX - rect.left - 40;
+            sliderValue = Math.max(0, Math.min(100, (relativeX / availableWidth) * 100));
+            updateUI();
+        }
+        
+        thumb.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
+        thumb.addEventListener('mousedown', () => isDragging = true);
+        document.addEventListener('touchmove', (e) => { if (isDragging) updateFromPosition(e.touches[0].clientX); });
+        document.addEventListener('mousemove', (e) => { if (isDragging) updateFromPosition(e.clientX); });
+        document.addEventListener('touchend', () => isDragging = false);
+        document.addEventListener('mouseup', () => isDragging = false);
+        trackContainer.addEventListener('click', (e) => updateFromPosition(e.clientX));
+        
+        updateUI();
+    </script>
+</body>
+</html>
