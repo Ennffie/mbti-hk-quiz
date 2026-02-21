@@ -299,9 +299,9 @@
             // 陷阱題（5題）
             {
                 id: 21, type: 'grid', layout: 'col', dim: 'TRAP', progress: 84, isTrap: true,
-                q: "邊個係真嘅？",
-                A: { emoji: '🍍', text: '菠蘿包\n冇菠蘿' },
-                B: { emoji: '🥟', text: '叉燒包\n冇叉燒' }
+                q: "⚠️ 邊個係真嘅？",
+                A: { emoji: '🍍', text: '菠蘿包冇菠蘿' },
+                B: { emoji: '🥟', text: '叉燒包冇叉燒' }
             },
             {
                 id: 22, type: 'grid', layout: 'row', dim: 'TRAP', progress: 90, isTrap: true,
@@ -346,12 +346,7 @@
             document.getElementById('questionText').textContent = q.q;
             
             const trapBadge = document.getElementById('trapBadge');
-            if (q.isTrap) {
-                trapBadge.textContent = '⚠️';
-                trapBadge.className = 'trap-badge';
-            } else {
-                trapBadge.className = 'hidden';
-            }
+            trapBadge.className = 'hidden';
             
             const container = document.getElementById('optionsArea');
             container.innerHTML = '';
