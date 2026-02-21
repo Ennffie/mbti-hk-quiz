@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港地生存性格測試 | MBTI v2.0 🌙</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%; animation: grad 15s ease infinite;
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 15px; overflow: hidden;
+        }
+        @keyframes grad { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        
+        .container {
+            background: rgba(255,255,255,0.95); border-radius: 40px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            max-width: 550px; width: 100%; min-height: 600px;
+            padding: 40px 30px; position: relative;
+            display: flex; flex-direction: column;
+        }
+
+        /* Cover Page */
+        #cover-page { text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; flex-grow: 1; }
+        .cover-emoji { font-size: 100px; margin-bottom: 20px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .cover-title { font-size: 42px; font-weight: 900; color: #333; margin-bottom: 10px; line-height: 1.1; }
+        .cover-subtitle { font-size: 18px; color: #666; margin-bottom: 40px; }
+        .start-btn {
+            background: linear-gradient(135deg, #8A2BE2, #FF69B4);
+            color: white; border: none; padding: 25px 60px; border-radius: 100px;
+            font-size: 24px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4); transition: 0.3s;
+        }
+        .start-btn:hover { transform: scale(1.1); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6); }
+
+        /* Quiz UI */
+        #quiz-ui { display: none; }
+        .progress-bar { height: 12px; background: #eee; border-radius: 20px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #8A2BE2, #FF69B4); width: 0%; transition: width 0.4s ease; }
+        .question-text { font-size: 28px; font-weight: 900; color: #222; margin-bottom: 35px; line-height: 1.3; }
+
+        /* Layout Types */
+        .options-box { display: flex; gap: 15px; width: 100%; }
+        .options-row { flex-direction: row; }
+        .options-col { flex-direction: column; }
+        
+        .option-card {
+            flex: 1; padding: 30px 20px; border: 4px solid #f0f0f0;
+            border-radius: 25px; cursor: pointer; transition: 0.2s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;
+            background: white; text-align: center;
+        }
+        .option-card:hover { border-color: #8A2BE2; background: #f8f0ff; transform: translateY(-5px); }
+        .card-emoji { font-size: 70px; }
+        .card-text { font-size: 20px; font-weight: 800; color: #333; }
+
+        /* Slider Mode */
+        .slider-ui { display: none; padding: 20px 0; }
+        .slider-labels { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .slider-label { font-size: 18px; font-weight: 900; color: #444; width: 45%; }
+        .range-slider {
+            width: 100%; height: 25px; border-radius: 20px;
+            background: #eee; outline: none; -webkit-appearance: none; margin: 40px 0;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 50px; height: 50px;
+            background: #8A2BE2; border-radius: 50%; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 4px solid white;
+        }
+        .confirm-btn {
+            width: 100%; padding: 20px; background: #333; color: white;
+            border: none; border-radius: 20px; font-size: 20px; font-weight: 800; cursor: pointer;
+        }
+
+        /* Luna Talk */
+        #luna-talk { position: absolute; top: -50px; left: 0; width: 100%; color: white; font-weight: bold; font-style: italic; opacity: 0; transition: 0.5s; }
+        .talk-show { opacity: 1 !important; top: -30px !important; }
+    </style>
+</head>
+<body>
+    <div id="luna-talk">Bro，認真啲答呀！🤫</div>
+    <div class="container">
+        <div id="cover-page">
+            <div class="cover-emoji">🌙✨</div>
+            <h1 class="cover-title">香港地<br>生存性格測試</h1>
+            <p class="cover-subtitle">搵出你潛藏喺骨子裡嘅「奇怪職業」！</p>
+            <button class="start-btn" onclick="start()">開始冒險 🚀</button>
+        </div>
+
+        <div id="quiz-ui">
+            <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+            <div class="question-text" id="q-text">加載中...</div>
+            <div class="options-box" id="options-container"></div>
+            <div class="slider-ui" id="slider-container">
+                <div class="slider-labels">
+                    <span class="slider-label" id="labelLeft" style="text-align:left"></span>
+                    <span class="slider-label" id="labelRight" style="text-align:right"></span>
+                </div>
+                <input type="range" min="0" max="100" value="50" class="range-slider" id="slider">
+                <button class="confirm-btn" onclick="handleSlider()">決定係你！🎯</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { id: 1, type: 'grid', layout: 'row', dim: 'EI', q: "收工之後，你通常會點樣「充電」？", A: "搵隊友落吧 🍺", AE: "🍺", B: "自己匿埋打機 🏠", BE: "🎮" },
+            { id: 2, type: 'grid', layout: 'col', dim: 'SN', q: "喺地鐵見到唔熟嘅同事，你會：", A: "「喂！咁橋呀！」(然後搵話題)", AE: "🗣️", B: "戴返好耳機，扮睇唔到", BE: "🎧" },
+            { id: 3, type: 'slider', dim: 'TF', q: "朋友俾人呃咗錢，你第一時間：", left: "笑佢笨 (分析點解被呃) 🧩", right: "安慰佢 (一齊鬧個騙子) ❤️" },
+            { id: 4, type: 'grid', layout: 'row', dim: 'PJ', q: "你去旅行嘅行程通常係：", A: "Excel 表跟到足 🗓️", AE: "📊", B: "去到機場先諗去邊 🎒", BE: "🌊" },
+            { id: 5, type: 'grid', layout: 'col', dim: 'TRAP', q: "老實講，你係咪亂撳緊？", A: "我係認真嘅！🔥", AE: "🔥", B: "你吹我唔脹 🤪", BE: "🤪" },
+            { id: 6, type: 'slider', dim: 'EI', q: "喺一個 50 人嘅 Party 入面：", left: "匿喺角落玩電話 🧘", right: "做全場嘅焦點 🎤" },
+            { id: 7, type: 'grid', layout: 'row', dim: 'SN', q: "你比較欣賞邊種人？", A: "踏實、注重數據 📐", AE: "🧱", B: "有遠見、天馬行空 🚀", BE: "🔮" },
+            { id: 8, type: 'grid', layout: 'col', dim: 'TF', q: "做決定時，你優先考慮：", A: "效率同埋邏輯 ⚖️", AE: "🧠", B: "大家嘅面子同感受 ❤️", BE: "🤝" },
+            { id: 9, type: 'slider', dim: 'PJ', q: "你嘅房間整潔程度係：", left: "好似被炸彈炸過 🌪️", right: "五星級酒店咁乾淨 ✨" }
+        ];
+
+        let currentIdx = 0;
+        let scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 };
+        let startTime = Date.now();
+        let results = [];
+
+        function start() {
+            document.getElementById('cover-page').style.display = 'none';
+            document.getElementById('quiz-ui').style.display = 'block';
+            showQ();
+        }
+
+        function showQ() {
+            const q = questions[currentIdx];
+            document.getElementById('progress').style.width = (currentIdx / questions.length) * 100 + '%';
+            document.getElementById('q-text').innerText = q.q;
+            
+            const container = document.getElementById('options-container');
+            const sliderBox = document.getElementById('slider-container');
+            container.innerHTML = '';
+            
+            if (q.type === 'grid') {
+                container.style.display = 'flex';
+                sliderBox.style.display = 'none';
+                container.className = 'options-box ' + (q.layout === 'row' ? 'options-row' : 'options-col');
+                
+                ['A', 'B'].forEach(type => {
+                    const card = document.createElement('div');
+                    card.className = 'option-card';
+                    card.innerHTML = `<div class="card-emoji">${q[type+'E']}</div><div class="card-text">${q[type]}</div>`;
+                    card.onclick = () => handleSelect(type);
+                    container.appendChild(card);
+                });
+            } else {
+                container.style.display = 'none';
+                sliderBox.style.display = 'block';
+                document.getElementById('labelLeft').innerText = q.left;
+                document.getElementById('labelRight').innerText = q.right;
+                document.getElementById('slider').value = 50;
+            }
+
+            if (currentIdx === 4) talk("呢題係陷阱嚟架...😏");
+            if (currentIdx === 7) talk("就快搞掂，頂住呀 Bro！💪");
+        }
+
+        function talk(txt) {
+            const el = document.getElementById('luna-talk');
+            el.innerText = txt;
+            el.classList.add('talk-show');
+            setTimeout(() => el.classList.remove('talk-show'), 3000);
+        }
+
+        function handleSelect(choice) {
+            const q = questions[currentIdx];
+            if (q.dim !== 'TRAP') {
+                scores[choice === 'A' ? q.dim[0] : q.dim[1]] += 10;
+            } else if (choice === 'B') {
+                results.push({ trap: 'fail' });
+            }
+            next();
+        }
+
+        function handleSlider() {
+            const q = questions[currentIdx];
+            const val = parseInt(document.getElementById('slider').value);
+            if (val < 50) scores[q.dim[0]] += (50-val)/5;
+            else scores[q.dim[1]] += (val-50)/5;
+            next();
+        }
+
+        function next() {
+            currentIdx++;
+            if (currentIdx < questions.length) showQ();
+            else finish();
+        }
+
+        function finish() {
+            const final = {
+                EI: Math.round((scores.E / (scores.E + scores.I || 1)) * 100),
+                SN: Math.round((scores.S / (scores.S + scores.N || 1)) * 100),
+                TF: Math.round((scores.T / (scores.T + scores.F || 1)) * 100),
+                PJ: Math.round((scores.P / (scores.P + scores.J || 1)) * 100)
+            };
+            const type = (final.EI >= 50 ? 'E':'I') + (final.SN >= 50 ? 'S':'N') + (final.TF >= 50 ? 'T':'F') + (final.PJ >= 50 ? 'P':'J');
+            localStorage.setItem('luna_mbti_result', JSON.stringify({
+                type, scores: final, time: Math.round((Date.now()-startTime)/1000),
+                traps: results.filter(r => r.trap === 'fail').length
+            }));
+            window.location.href = 'result.html';
+        }
+    </script>
+</body>
+</html>
