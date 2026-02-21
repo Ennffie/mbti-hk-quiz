@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港地生存性格測試 | MBTI 終極完整版 🌙</title>
+    <title>香港地生存性格測試 | MBTI 終極完整版 v3.1 🌙</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -11,98 +11,52 @@
             background: linear-gradient(135deg, #E67E22 0%, #c0392b 100%);
             min-height: 100vh; display: flex; flex-direction: column;
         }
-        
         .quiz-header { display: flex; align-items: center; padding: 16px; gap: 16px; }
-        .back-button {
-            background: rgba(255, 255, 255, 0.9); border: none; width: 40px; height: 40px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .progress-bar { flex: 1; height: 8px; background: rgba(255, 255, 255, 0.3); border-radius: 4px; overflow: hidden; }
+        .back-button { background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; }
+        .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; }
         .progress-fill { height: 100%; background: white; border-radius: 4px; transition: width 0.3s; }
         .question-counter { color: white; font-size: 14px; font-weight: 600; }
         .timer { color: white; font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
-        
         .quiz-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; }
         .quiz-question { font-size: 24px; font-weight: 700; color: white; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2); line-height: 1.4; }
-        
         .options-box { display: flex; gap: 15px; width: 100%; }
         .options-row { flex-direction: row; }
         .options-col { flex-direction: column; }
-        .option-card {
-            flex: 1; padding: 25px 15px; border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 25px; cursor: pointer; transition: 0.2s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-            background: rgba(255,255,255,0.1); text-align: center;
-        }
+        .option-card { flex: 1; padding: 25px 15px; border: 4px solid rgba(255,255,255,0.3); border-radius: 25px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: rgba(255,255,255,0.1); text-align: center; }
         .option-card:hover { border-color: white; background: rgba(255,255,255,0.2); transform: translateY(-5px); }
         .option-card.selected { border-color: white; background: white; }
         .card-emoji { font-size: 50px; }
         .card-text { font-size: 16px; font-weight: 800; color: white; line-height: 1.3; }
         .option-card.selected .card-text { color: #2c3e50; }
-        
         .slider-section { padding: 8px 16px 0; }
         .slider-track-container { position: relative; height: 60px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; padding: 0 40px; }
-        .slider-track { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.3); border-radius: 6px; position: relative; overflow: hidden; }
+        .slider-track { width: 100%; height: 12px; background: rgba(255,255,255,0.3); border-radius: 6px; position: relative; overflow: hidden; }
         .slider-track-fill { height: 100%; background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.8) 100%); border-radius: 6px; width: 0%; transition: width 0.1s; }
         .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; padding: 0 4px; }
-        .slider-label { font-size: 14px; color: rgba(255, 255, 255, 0.6); font-weight: 600; }
+        .slider-label { font-size: 14px; color: rgba(255,255,255,0.6); font-weight: 600; }
         .slider-label.active { color: white; transform: scale(1.2); }
-        .slider-thumb {
-            position: absolute; top: 50%; transform: translateY(-50%); width: 80px; height: 48px;
-            background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3); cursor: grab; user-select: none; left: 0;
-        }
+        .slider-thumb { position: absolute; top: 50%; transform: translateY(-50%); width: 80px; height: 48px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3); cursor: grab; user-select: none; left: 0; }
         .slider-thumb.dragging { cursor: grabbing; transform: translateY(-50%) scale(1.1); }
         .slider-thumb-text { font-size: 16px; font-weight: 700; color: #E67E22; }
-        .slider-hint { text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-top: 2px; }
-        
-        .selected-display { 
-            background: white; border-radius: 20px; padding: 20px; text-align: center; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2); margin-bottom: 20px;
-        }
+        .slider-hint { text-align: center; color: rgba(255,255,255,0.8); font-size: 14px; margin-top: 2px; }
+        .selected-display { background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .selected-emoji { font-size: 40px; line-height: 1; margin-bottom: 8px; }
         .selected-text { font-size: 18px; font-weight: 700; color: #2c3e50; }
-        
         .quiz-footer { padding: 24px 20px 40px; }
         .quiz-footer.hidden { display: none; }
-        .quiz-submit-btn { 
-            width: 100%; padding: 18px 24px; background: #E67E22; color: white; 
-            border: none; border-radius: 14px; font-size: 20px; font-weight: 700; 
-            cursor: pointer; box-shadow: 0 4px 16px rgba(230, 126, 34, 0.4);
-        }
+        .quiz-submit-btn { width: 100%; padding: 18px 24px; background: #E67E22; color: white; border: none; border-radius: 14px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(230,126,34,0.4); }
         .quiz-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        #cover-page { 
-            min-height: 100vh; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; padding: 40px 30px;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            background-size: 400% 400%; animation: grad 15s ease infinite;
-        }
+        #cover-page { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 30px; background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); background-size: 400% 400%; animation: grad 15s ease infinite; }
         @keyframes grad { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        .cover-container {
-            background: rgba(255,255,255,0.95); border-radius: 40px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-            max-width: 550px; width: 100%; padding: 40px 30px; text-align: center;
-        }
+        .cover-container { background: rgba(255,255,255,0.95); border-radius: 40px; box-shadow: 0 30px 80px rgba(0,0,0,0.5); max-width: 550px; width: 100%; padding: 40px 30px; text-align: center; }
         .cover-emoji { font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .cover-title { font-size: 32px; font-weight: 900; color: #333; margin-bottom: 10px; }
         .cover-subtitle { font-size: 16px; color: #666; margin-bottom: 15px; }
         .cover-stats { font-size: 14px; color: #888; margin-bottom: 20px; }
         .version-tag { font-size: 14px; color: #999; margin-bottom: 20px; background: #f0f0f0; padding: 8px 16px; border-radius: 20px; display: inline-block; }
-        .start-btn {
-            background: linear-gradient(135deg, #8A2BE2, #FF69B4); color: white; border: none;
-            padding: 20px 50px; border-radius: 100px; font-size: 22px; font-weight: 900;
-            cursor: pointer; box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4);
-        }
-        
+        .start-btn { background: linear-gradient(135deg, #8A2BE2, #FF69B4); color: white; border: none; padding: 20px 50px; border-radius: 100px; font-size: 22px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 30px rgba(138,43,226,0.4); }
         .hidden { display: none !important; }
-        
-        .trap-badge { 
-            background: #ff4757; color: white; font-size: 12px; padding: 4px 10px; 
-            border-radius: 10px; display: inline-block; margin-bottom: 10px; font-weight: 700;
-        }
     </style>
 </head>
 <body>
@@ -111,8 +65,8 @@
             <div class="cover-emoji">🌙✨</div>
             <h1 class="cover-title">香港地生存性格測試</h1>
             <p class="cover-subtitle">搵出你潛藏喺骨子裡嘅「奇怪職業」！</p>
-            <p class="cover-stats">23題 · 計時挑戰 · 陷阱題警告⚠️</p>
-            <div class="version-tag">🌙 v3.0.0 終極完整版</div>
+            <p class="cover-stats">23題 · 計時挑戰 · 陷阱題分散⚠️</p>
+            <div class="version-tag">🌙 v3.1.0 終極完整版</div>
             <button class="start-btn" onclick="startQuiz()">開始冒險 🚀</button>
         </div>
     </div>
@@ -121,12 +75,11 @@
         <div class="quiz-header">
             <button class="back-button" onclick="prevQuestion()">←</button>
             <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
-            <div class="question-counter" id="questionNum">1/24</div>
+            <div class="question-counter" id="questionNum">1/23</div>
             <div class="timer" id="timer">00:00</div>
         </div>
 
         <div class="quiz-content" id="quizContent">
-            <div id="trapBadge" class="hidden"></div>
             <h1 class="quiz-question" id="questionText">加載中...</h1>
             <div id="optionsArea"></div>
         </div>
@@ -137,196 +90,46 @@
     </div>
 
     <script>
-        // 24題完整版（MBTI + 陷阱題）
+        // 23題 - 陷阱題分散在第9、16、23題
         const questions = [
             // E/I 維度
-            {
-                id: 1, type: 'slider', dim: 'EI', progress: 4,
-                q: "收工之後，你通常會點樣「充電」？",
-                options: [
-                    { emoji: '📚', text: '靜靜睇書', desc: '享受一個人嘅寧靜時光' },
-                    { emoji: '🏃', text: '做運動', desc: '用汗水釋放壓力' },
-                    { emoji: '👥', text: '同朋友聚會', desc: '同好姊妹/好兄弟傾偈' },
-                    { emoji: '🎉', text: '去派對狂歡', desc: '盡情玩樂認識新朋友' }
-                ]
-            },
-            {
-                id: 2, type: 'grid', layout: 'col', dim: 'EI', progress: 8,
-                q: "喺一個 50 人嘅 Party 入面，你會：",
-                A: { emoji: '🧘', text: '匿喺角落\n玩電話' },
-                B: { emoji: '🎤', text: '做全場嘅\n焦點' }
-            },
-            {
-                id: 3, type: 'grid', layout: 'row', dim: 'EI', progress: 12,
-                q: "週末理想活動係：",
-                A: { emoji: '🏠', text: '宅喺屋企\n煲劇' },
-                B: { emoji: '🌆', text: '出街見人\n社交' }
-            },
+            { id: 1, type: 'slider', dim: 'EI', progress: 4, q: "收工之後，你通常會點樣「充電」？", options: [{ emoji: '📚', text: '靜靜睇書', desc: '享受一個人嘅寧靜時光' }, { emoji: '🏃', text: '做運動', desc: '用汗水釋放壓力' }, { emoji: '👥', text: '同朋友聚會', desc: '同好姊妹/好兄弟傾偈' }, { emoji: '🎉', text: '去派對狂歡', desc: '盡情玩樂認識新朋友' }] },
+            { id: 2, type: 'grid', layout: 'col', dim: 'EI', progress: 8, q: "喺一個 50 人嘅 Party 入面，你會：", A: { emoji: '🧘', text: '匿喺角落\n玩電話' }, B: { emoji: '🎤', text: '做全場嘅\n焦點' } },
+            { id: 3, type: 'grid', layout: 'row', dim: 'EI', progress: 12, q: "週末理想活動係：", A: { emoji: '🏠', text: '宅喺屋企\n煲劇' }, B: { emoji: '🌆', text: '出街見人\n社交' } },
             // S/N 維度
-            {
-                id: 4, type: 'grid', layout: 'col', dim: 'SN', progress: 16,
-                q: "喺地鐵見到唔熟嘅同事，你會：",
-                A: { emoji: '🗣️', text: '「喂！咁橋呀！」\n(然後搵話題)' },
-                B: { emoji: '🎧', text: '戴返好耳機\n扮睇唔到' }
-            },
-            {
-                id: 5, type: 'grid', layout: 'row', dim: 'SN', progress: 20,
-                q: "你比較欣賞邊種人？",
-                A: { emoji: '🧱', text: '踏實、\n注重數據' },
-                B: { emoji: '🔮', text: '有遠見、\n天馬行空' }
-            },
-            {
-                id: 6, type: 'slider', dim: 'SN', progress: 24,
-                q: "你嘅想像力程度係：",
-                options: [
-                    { emoji: '📐', text: '非常務實', desc: '淨係信眼見嘅嘢' },
-                    { emoji: '🤔', text: '偶爾發呆', desc: '間中會諗下如果' },
-                    { emoji: '💭', text: '成日發夢', desc: '腦海有小劇場' },
-                    { emoji: '🚀', text: '活在未來', desc: '已經諗緊十年後' }
-                ]
-            },
+            { id: 4, type: 'grid', layout: 'col', dim: 'SN', progress: 16, q: "喺地鐵見到唔熟嘅同事，你會：", A: { emoji: '🗣️', text: '「喂！咁橋呀！」\n(然後搵話題)' }, B: { emoji: '🎧', text: '戴返好耳機\n扮睇唔到' } },
+            { id: 5, type: 'grid', layout: 'row', dim: 'SN', progress: 20, q: "你比較欣賞邊種人？", A: { emoji: '🧱', text: '踏實、\n注重數據' }, B: { emoji: '🔮', text: '有遠見、\n天馬行空' } },
+            { id: 6, type: 'slider', dim: 'SN', progress: 24, q: "你嘅想像力程度係：", options: [{ emoji: '📐', text: '非常務實', desc: '淨係信眼見嘅嘢' }, { emoji: '🤔', text: '偶爾發呆', desc: '間中會諗下如果' }, { emoji: '💭', text: '成日發夢', desc: '腦海有小劇場' }, { emoji: '🚀', text: '活在未來', desc: '已經諗緊十年後' }] },
             // T/F 維度
-            {
-                id: 7, type: 'slider', dim: 'TF', progress: 28,
-                q: "朋友俾人呃咗錢，你第一時間：",
-                options: [
-                    { emoji: '🧩', text: '笑佢笨', desc: '分析點解被呃' },
-                    { emoji: '⚖️', text: '理性分析', desc: '研究邊度出錯' },
-                    { emoji: '🤗', text: '安慰佢', desc: '一齊鬧個騙子' },
-                    { emoji: '❤️', text: '情感支持', desc: '陪佢度過難關' }
-                ]
-            },
-            {
-                id: 8, type: 'grid', layout: 'row', dim: 'TF', progress: 32,
-                q: "做決定時，你優先考慮：",
-                A: { emoji: '🧠', text: '效率同埋\n邏輯' },
-                B: { emoji: '🤝', text: '大家嘅\n面子同感受' }
-            },
-            {
-                id: 9, type: 'slider', dim: 'TF', progress: 36,
-                q: "睇戲時你會：",
-                options: [
-                    { emoji: '📊', text: '分析劇情', desc: '呢個位有bug' },
-                    { emoji: '🤨', text: '理性評價', desc: '導演手法幾好' },
-                    { emoji: '😢', text: '容易感動', desc: '主角好慘啊' },
-                    { emoji: '😭', text: '完全代入', desc: '喊到收唔到聲' }
-                ]
-            },
+            { id: 7, type: 'slider', dim: 'TF', progress: 28, q: "朋友俾人呃咗錢，你第一時間：", options: [{ emoji: '🧩', text: '笑佢笨', desc: '分析點解被呃' }, { emoji: '⚖️', text: '理性分析', desc: '研究邊度出錯' }, { emoji: '🤗', text: '安慰佢', desc: '一齊鬧個騙子' }, { emoji: '❤️', text: '情感支持', desc: '陪佢度過難關' }] },
+            { id: 8, type: 'grid', layout: 'row', dim: 'TF', progress: 32, q: "做決定時，你優先考慮：", A: { emoji: '🧠', text: '效率同埋\n邏輯' }, B: { emoji: '🤝', text: '大家嘅\n面子同感受' } },
+            // 陷阱題 1（第9題）
+            { id: 9, type: 'grid', layout: 'col', dim: 'TRAP', progress: 36, isTrap: true, q: "⚠️ 邊個係真嘅？", A: { emoji: '🍍', text: '菠蘿包冇菠蘿' }, B: { emoji: '🥮', text: '叉燒包冇叉燒' } },
+            { id: 10, type: 'slider', dim: 'TF', progress: 40, q: "睇戲時你會：", options: [{ emoji: '📊', text: '分析劇情', desc: '呢個位有bug' }, { emoji: '🤨', text: '理性評價', desc: '導演手法幾好' }, { emoji: '😢', text: '容易感動', desc: '主角好慘啊' }, { emoji: '😭', text: '完全代入', desc: '喊到收唔到聲' }] },
             // P/J 維度
-            {
-                id: 10, type: 'grid', layout: 'row', dim: 'PJ', progress: 40,
-                q: "你去旅行嘅行程通常係：",
-                A: { emoji: '📊', text: 'Excel 表\n跟到足' },
-                B: { emoji: '🌊', text: '去到機場\n先諗去邊' }
-            },
-            {
-                id: 11, type: 'slider', dim: 'PJ', progress: 44,
-                q: "你嘅房間/枱面整潔程度係：",
-                options: [
-                    { emoji: '🌪️', text: '好似被炸彈炸過', desc: '尋嘢都要花半個鐘' },
-                    { emoji: '📦', text: '亂中有序', desc: '自己知自己嘢擺喺邊' },
-                    { emoji: '✨', text: '乾淨企理', desc: '每樣嘢都有佢嘅位置' },
-                    { emoji: '🏆', text: '五星級酒店咁乾淨', desc: '連塵都冇一粒' }
-                ]
-            },
-            {
-                id: 12, type: 'grid', layout: 'col', dim: 'PJ', progress: 48,
-                q: "Deadline 前你會：",
-                A: { emoji: '😎', text: '提早完成\n悠閒等交' },
-                B: { emoji: '😰', text: '最後一刻\n先衝刺' }
-            },
+            { id: 11, type: 'grid', layout: 'row', dim: 'PJ', progress: 44, q: "你去旅行嘅行程通常係：", A: { emoji: '📊', text: 'Excel 表\n跟到足' }, B: { emoji: '🌊', text: '去到機場\n先諗去邊' } },
+            { id: 12, type: 'slider', dim: 'PJ', progress: 48, q: "你嘅房間/枱面整潔程度係：", options: [{ emoji: '🌪️', text: '好似被炸彈炸過', desc: '尋嘢都要花半個鐘' }, { emoji: '📦', text: '亂中有序', desc: '自己知自己嘢擺喺邊' }, { emoji: '✨', text: '乾淨企理', desc: '每樣嘢都有佢嘅位置' }, { emoji: '🏆', text: '五星級酒店咁乾淨', desc: '連塵都冇一粒' }] },
+            { id: 13, type: 'grid', layout: 'col', dim: 'PJ', progress: 52, q: "Deadline 前你會：", A: { emoji: '😎', text: '提早完成\n悠閒等交' }, B: { emoji: '😰', text: '最後一刻\n先衝刺' } },
             // 第2輪 E/I
-            {
-                id: 13, type: 'grid', layout: 'row', dim: 'EI', progress: 52,
-                q: "你比較似邊個？",
-                A: { emoji: '🐱', text: '貓 - 獨立\n唔係好理人' },
-                B: { emoji: '🐶', text: '狗 - 熱情\n要人陪' }
-            },
+            { id: 14, type: 'grid', layout: 'row', dim: 'EI', progress: 56, q: "你比較似邊個？", A: { emoji: '🐱', text: '貓 - 獨立\n唔係好理人' }, B: { emoji: '🐶', text: '狗 - 熱情\n要人陪' } },
             // 第2輪 S/N
-            {
-                id: 14, type: 'slider', dim: 'SN', progress: 56,
-                q: "你相信自己：",
-                options: [
-                    { emoji: '👀', text: '眼見為實', desc: '睇到先信' },
-                    { emoji: '🤲', text: '感覺先行', desc: '直覺都好準' },
-                    { emoji: '🔮', text: '第六感強', desc: '成日有預感' },
-                    { emoji: '✨', text: '超自然感應', desc: '我係通靈師' }
-                ]
-            },
+            { id: 15, type: 'slider', dim: 'SN', progress: 60, q: "你相信自己：", options: [{ emoji: '👀', text: '眼見為實', desc: '睇到先信' }, { emoji: '🤲', text: '感覺先行', desc: '直覺都好準' }, { emoji: '🔮', text: '第六感強', desc: '成日有預感' }, { emoji: '✨', text: '超自然感應', desc: '我係通靈師' }] },
+            // 陷阱題 2（第16題）
+            { id: 16, type: 'grid', layout: 'row', dim: 'TRAP', progress: 64, isTrap: true, q: "老實講，你係咪亂撳緊？", A: { emoji: '🔥', text: '我係認真嘅！' }, B: { emoji: '🤪', text: '你吹我唔脹' } },
             // 第2輪 T/F
-            {
-                id: 15, type: 'grid', layout: 'col', dim: 'TF', progress: 60,
-                q: "朋友問你意見，你會：",
-                A: { emoji: '💯', text: '老實講\n唔怕得罪人' },
-                B: { emoji: '🥰', text: '講佢想聽嘅\n唔想佢傷心' }
-            },
+            { id: 17, type: 'grid', layout: 'col', dim: 'TF', progress: 68, q: "朋友問你意見，你會：", A: { emoji: '💯', text: '老實講\n唔怕得罪人' }, B: { emoji: '🥰', text: '講佢想聽嘅\n唔想佢傷心' } },
             // 第2輪 P/J
-            {
-                id: 16, type: 'grid', layout: 'row', dim: 'PJ', progress: 64,
-                q: "突然話要去旅行，你：",
-                A: { emoji: '📋', text: '要計劃\n有安全網' },
-                B: { emoji: '🎲', text: '即興出走\n先係好玩' }
-            },
+            { id: 18, type: 'grid', layout: 'row', dim: 'PJ', progress: 72, q: "突然話要去旅行，你：", A: { emoji: '📋', text: '要計劃\n有安全網' }, B: { emoji: '🎲', text: '即興出走\n先係好玩' } },
             // 第3輪
-            {
-                id: 17, type: 'slider', dim: 'EI', progress: 68,
-                q: "電話響起你會：",
-                options: [
-                    { emoji: '😱', text: '驚到彈起', desc: '邊個打嚟？' },
-                    { emoji: '🤔', text: '睇吓係邊個', desc: '再決定接唔接' },
-                    { emoji: '😊', text: '開心接聽', desc: '有人搵我！' },
-                    { emoji: '🥳', text: '超興奮', desc: '快啲傾偈！' }
-                ]
-            },
-            {
-                id: 18, type: 'grid', layout: 'col', dim: 'SN', progress: 72,
-                q: "你係咪容易分心？",
-                A: { emoji: '🎯', text: '專注一件事\n做到完' },
-                B: { emoji: '🦋', text: '成日諗第二樣\n跳來跳去' }
-            },
-            {
-                id: 19, type: 'slider', dim: 'TF', progress: 76,
-                q: "你關心人定係事？",
-                options: [
-                    { emoji: '📈', text: '淨係睇結果', desc: '人哋點諗唔緊要' },
-                    { emoji: '📋', text: '過程重要', desc: '但係效率優先' },
-                    { emoji: '🤗', text: '人都幾緊要', desc: '和諧好緊要' },
-                    { emoji: '💖', text: '人永遠第一', desc: '事可以慢慢做' }
-                ]
-            },
-            {
-                id: 20, type: 'grid', layout: 'row', dim: 'PJ', progress: 80,
-                q: "你鍾意幾時做嘢？",
-                A: { emoji: '🌅', text: '早鳥起哂身\n一早做完' },
-                B: { emoji: '🌙', text: '夜貓先清醒\n午夜衝刺' }
-            },
-            // 陷阱題（5題）
-            {
-                id: 21, type: 'grid', layout: 'col', dim: 'TRAP', progress: 84, isTrap: true,
-                q: "⚠️ 邊個係真嘅？",
-                A: { emoji: '🍍', text: '菠蘿包冇菠蘿' },
-                B: { emoji: '🥟', text: '叉燒包冇叉燒' }
-            },
-            {
-                id: 22, type: 'grid', layout: 'row', dim: 'TRAP', progress: 90, isTrap: true,
-                q: "老實講，你係咪亂撳緊？",
-                A: { emoji: '🔥', text: '我係認真嘅！' },
-                B: { emoji: '🤪', text: '你吹我唔脹' }
-            },
-            {
-                id: 23, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true,
-                q: "你相信呢個測驗準唔準？",
-                A: { emoji: '📊', text: '科學根據\n一定準' },
-                B: { emoji: '🎲', text: '求其啦\n當笑料' }
-            }
+            { id: 19, type: 'slider', dim: 'EI', progress: 76, q: "電話響起你會：", options: [{ emoji: '😱', text: '驚到彈起', desc: '邊個打嚟？' }, { emoji: '🤔', text: '睇吓係邊個', desc: '再決定接唔接' }, { emoji: '😊', text: '開心接聽', desc: '有人搵我！' }, { emoji: '🥳', text: '超興奮', desc: '快啲傾偈！' }] },
+            { id: 20, type: 'grid', layout: 'col', dim: 'SN', progress: 80, q: "你係咪容易分心？", A: { emoji: '🎯', text: '專注一件事\n做到完' }, B: { emoji: '🦋', text: '成日諗第二樣\n跳來跳去' } },
+            { id: 21, type: 'slider', dim: 'TF', progress: 84, q: "你關心人定係事？", options: [{ emoji: '📈', text: '淨係睇結果', desc: '人哋點諗唔緊要' }, { emoji: '📋', text: '過程重要', desc: '但係效率優先' }, { emoji: '🤗', text: '人都幾緊要', desc: '和諧好緊要' }, { emoji: '💖', text: '人永遠第一', desc: '事可以慢慢做' }] },
+            { id: 22, type: 'grid', layout: 'row', dim: 'PJ', progress: 88, q: "你鍾意幾時做嘢？", A: { emoji: '🌅', text: '早鳥起哂身\n一早做完' }, B: { emoji: '🌙', text: '夜貓先清醒\n午夜衝刺' } },
+            // 陷阱題 3（第23題 - 最後）
+            { id: 23, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true, q: "你相信呢個測驗準唔準？", A: { emoji: '📊', text: '科學根據\n一定準' }, B: { emoji: '🎲', text: '求其啦\n當笑料' } }
         ];
 
-        let currentIdx = 0;
-        let scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 };
-        let answers = [];
-        let startTime = null;
-        let timerInterval = null;
-        let trapFails = 0;
+        let currentIdx = 0, scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 }, answers = [], startTime = null, timerInterval = null, trapFails = 0;
 
         function startQuiz() {
             document.getElementById('cover-page').classList.add('hidden');
@@ -348,53 +151,23 @@
             document.getElementById('progressBar').style.width = q.progress + '%';
             document.getElementById('questionNum').textContent = (currentIdx + 1) + '/23';
             document.getElementById('questionText').textContent = q.q;
-            
-            const trapBadge = document.getElementById('trapBadge');
-            trapBadge.className = 'hidden';
-            
             const container = document.getElementById('optionsArea');
             container.innerHTML = '';
-            
-            if (q.type === 'slider') {
-                renderSlider(q, container);
-            } else {
-                renderGrid(q, container);
-            }
-            
+            if (q.type === 'slider') { renderSlider(q, container); } else { renderGrid(q, container); }
             updateNextButton();
         }
 
         function renderSlider(q, container) {
             const display = document.createElement('div');
             display.className = 'selected-display';
-            display.innerHTML = `
-                <div class="selected-emoji" id="selEmoji">${q.options[0].emoji}</div>
-                <div class="selected-text" id="selText">${q.options[0].text}</div>
-            `;
+            display.innerHTML = `<div class="selected-emoji" id="selEmoji">${q.options[0].emoji}</div><div class="selected-text" id="selText">${q.options[0].text}</div>`;
             container.appendChild(display);
-            
             const sliderSection = document.createElement('div');
             sliderSection.className = 'slider-section';
-            sliderSection.innerHTML = `
-                <div class="slider-track-container" id="trackContainer">
-                    <div class="slider-track"><div class="slider-track-fill" id="trackFill" style="width:0%"></div></div>
-                    <div class="slider-labels">
-                        <span class="slider-label active">I</span>
-                        <span class="slider-label">II</span>
-                        <span class="slider-label">III</span>
-                        <span class="slider-label">IV</span>
-                    </div>
-                    <div class="slider-thumb" id="sliderThumb" style="left:0"><span class="slider-thumb-text">郁我</span></div>
-                </div>
-                <p class="slider-hint">👆 拖動控制器選擇</p>
-            `;
+            sliderSection.innerHTML = `<div class="slider-track-container" id="trackContainer"><div class="slider-track"><div class="slider-track-fill" id="trackFill" style="width:0%"></div></div><div class="slider-labels"><span class="slider-label active">I</span><span class="slider-label">II</span><span class="slider-label">III</span><span class="slider-label">IV</span></div><div class="slider-thumb" id="sliderThumb" style="left:0"><span class="slider-thumb-text">郁我</span></div></div><p class="slider-hint">👆 拖動控制器選擇</p>`;
             container.appendChild(sliderSection);
-            
             let sliderValue = 0, isDragging = false;
-            const thumb = document.getElementById('sliderThumb');
-            const trackContainer = document.getElementById('trackContainer');
-            const trackFill = document.getElementById('trackFill');
-            
+            const thumb = document.getElementById('sliderThumb'), trackContainer = document.getElementById('trackContainer'), trackFill = document.getElementById('trackFill');
             function updateUI() {
                 const index = Math.min(Math.floor((sliderValue / 100) * 4), 3);
                 document.getElementById('selEmoji').textContent = q.options[index].emoji;
@@ -405,7 +178,6 @@
                 answers[currentIdx] = { value: sliderValue, index: index };
                 updateNextButton();
             }
-            
             function updatePos(clientX) {
                 const rect = trackContainer.getBoundingClientRect();
                 const availW = rect.width - 80;
@@ -413,7 +185,6 @@
                 sliderValue = Math.max(0, Math.min(100, (relX / availW) * 100));
                 updateUI();
             }
-            
             thumb.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
             thumb.addEventListener('mousedown', () => isDragging = true);
             document.addEventListener('touchmove', (e) => { if (isDragging) { e.preventDefault(); updatePos(e.touches[0].clientX); } }, { passive: false });
@@ -421,35 +192,26 @@
             document.addEventListener('touchend', () => { if (isDragging) { isDragging = false; } });
             document.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; } });
             trackContainer.addEventListener('click', (e) => updatePos(e.clientX));
-            
-            // Slider 顯示下一題按鈕
             document.getElementById('quizFooter').classList.remove('hidden');
         }
 
         function renderGrid(q, container) {
             const box = document.createElement('div');
             box.className = 'options-box ' + (q.layout === 'row' ? 'options-row' : 'options-col');
-            
             ['A', 'B'].forEach((type) => {
                 const card = document.createElement('div');
                 card.className = 'option-card';
-                card.innerHTML = `
-                    <div class="card-emoji">${q[type].emoji}</div>
-                    <div class="card-text">${q[type].text.replace(/\n/g, '<br>')}</div>
-                `;
+                card.innerHTML = `<div class="card-emoji">${q[type].emoji}</div><div class="card-text">${q[type].text.replace(/\n/g, '<br>')}</div>`;
                 card.onclick = () => {
                     document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
                     answers[currentIdx] = { choice: type };
                     updateNextButton();
-                    // Grid 自動跳下一題
                     setTimeout(() => nextQuestion(), 300);
                 };
                 box.appendChild(card);
             });
             container.appendChild(box);
-            
-            // Grid 隱藏下一題按鈕
             document.getElementById('quizFooter').classList.add('hidden');
         }
 
@@ -460,57 +222,28 @@
         }
 
         function nextQuestion() {
-            const q = questions[currentIdx];
-            const ans = answers[currentIdx];
-            
+            const q = questions[currentIdx], ans = answers[currentIdx];
             if (q.dim !== 'TRAP') {
-                if (q.type === 'grid') {
-                    scores[ans.choice === 'A' ? q.dim[0] : q.dim[1]] += 10;
-                } else {
-                    const val = ans.value;
-                    if (val < 50) scores[q.dim[0]] += (50 - val) / 5;
-                    else scores[q.dim[1]] += (val - 50) / 5;
-                }
+                if (q.type === 'grid') { scores[ans.choice === 'A' ? q.dim[0] : q.dim[1]] += 10; }
+                else { const val = ans.value; if (val < 50) scores[q.dim[0]] += (50 - val) / 5; else scores[q.dim[1]] += (val - 50) / 5; }
             } else {
-                // 陷阱題計分
-            if (q.id === 21 && ans.choice === 'B') trapFails++;
-                if (q.id === 23 && ans.choice === 'B') trapFails++;
-                if (q.id === 22) trapFails++; // 最後一題無論點都計
+                if (q.id === 9 && ans.choice === 'B') trapFails++;
+                if (q.id === 16 && ans.choice === 'B') trapFails++;
+                if (q.id === 23) trapFails++;
             }
-            
             currentIdx++;
-            if (currentIdx < questions.length) {
-                showQuestion();
-            } else {
-                showResult();
-            }
+            if (currentIdx < questions.length) { showQuestion(); }
+            else { showResult(); }
         }
 
-        function prevQuestion() {
-            if (currentIdx > 0) {
-                currentIdx--;
-                showQuestion();
-            }
-        }
+        function prevQuestion() { if (currentIdx > 0) { currentIdx--; showQuestion(); } }
 
         function showResult() {
             clearInterval(timerInterval);
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            
-            const final = {
-                EI: Math.round((scores.E / (scores.E + scores.I || 1)) * 100),
-                SN: Math.round((scores.S / (scores.S + scores.N || 1)) * 100),
-                TF: Math.round((scores.T / (scores.T + scores.F || 1)) * 100),
-                PJ: Math.round((scores.P / (scores.P + scores.J || 1)) * 100)
-            };
-            const type = (final.EI >= 50 ? 'E' : 'I') + 
-                        (final.SN >= 50 ? 'S' : 'N') + 
-                        (final.TF >= 50 ? 'T' : 'F') + 
-                        (final.PJ >= 50 ? 'P' : 'J');
-            
-            localStorage.setItem('luna_mbti_result', JSON.stringify({ 
-                type, scores: final, time: elapsed, traps: trapFails 
-            }));
+            const final = { EI: Math.round((scores.E / (scores.E + scores.I || 1)) * 100), SN: Math.round((scores.S / (scores.S + scores.N || 1)) * 100), TF: Math.round((scores.T / (scores.T + scores.F || 1)) * 100), PJ: Math.round((scores.P / (scores.P + scores.J || 1)) * 100) };
+            const type = (final.EI >= 50 ? 'E' : 'I') + (final.SN >= 50 ? 'S' : 'N') + (final.TF >= 50 ? 'T' : 'F') + (final.PJ >= 50 ? 'P' : 'J');
+            localStorage.setItem('luna_mbti_result', JSON.stringify({ type, scores: final, time: elapsed, traps: trapFails }));
             window.location.href = 'result.html';
         }
     </script>
