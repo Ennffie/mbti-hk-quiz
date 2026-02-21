@@ -111,7 +111,7 @@
             <div class="cover-emoji">🌙✨</div>
             <h1 class="cover-title">香港地生存性格測試</h1>
             <p class="cover-subtitle">搵出你潛藏喺骨子裡嘅「奇怪職業」！</p>
-            <p class="cover-stats">24題 · 計時挑戰 · 陷阱題警告⚠️</p>
+            <p class="cover-stats">23題 · 計時挑戰 · 陷阱題警告⚠️</p>
             <div class="version-tag">🌙 v3.0.0 終極完整版</div>
             <button class="start-btn" onclick="startQuiz()">開始冒險 🚀</button>
         </div>
@@ -304,19 +304,13 @@
                 B: { emoji: '🥟', text: '叉燒包\n冇叉燒 ❌' }
             },
             {
-                id: 22, type: 'grid', layout: 'col', dim: 'TRAP', progress: 88, isTrap: true,
-                q: "⚠️ 陷阱題：邊個啱？",
-                A: { emoji: '🐟', text: '魚香茄子\n冇魚 ✅' },
-                B: { emoji: '🍖', text: '老婆餅\n有老婆 ❌' }
-            },
-            {
-                id: 23, type: 'grid', layout: 'row', dim: 'TRAP', progress: 92, isTrap: true,
+                id: 22, type: 'grid', layout: 'row', dim: 'TRAP', progress: 90, isTrap: true,
                 q: "⚠️ 陷阱題：老實講，你係咪亂撳緊？",
                 A: { emoji: '🔥', text: '我係認真嘅！' },
                 B: { emoji: '🤪', text: '你吹我唔脹' }
             },
             {
-                id: 24, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true,
+                id: 23, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true,
                 q: "⚠️ 最後陷阱：你相信呢個測驗準唔準？",
                 A: { emoji: '📊', text: '科學根據\n一定準' },
                 B: { emoji: '🎲', text: '求其啦\n當笑料' }
@@ -348,7 +342,7 @@
         function showQuestion() {
             const q = questions[currentIdx];
             document.getElementById('progressBar').style.width = q.progress + '%';
-            document.getElementById('questionNum').textContent = (currentIdx + 1) + '/24';
+            document.getElementById('questionNum').textContent = (currentIdx + 1) + '/23';
             document.getElementById('questionText').textContent = q.q;
             
             const trapBadge = document.getElementById('trapBadge');
@@ -463,7 +457,7 @@
         function updateNextButton() {
             const btn = document.getElementById('nextBtn');
             btn.disabled = !answers[currentIdx];
-            btn.textContent = currentIdx === 23 ? '睇結果！🎯' : '下一題 →';
+            btn.textContent = currentIdx === 22 ? '睇結果！🎯' : '下一題 →';
         }
 
         function nextQuestion() {
@@ -480,10 +474,9 @@
                 }
             } else {
                 // 陷阱題計分
-                if (q.id === 21 && ans.choice === 'B') trapFails++;
-                if (q.id === 22 && ans.choice === 'B') trapFails++;
+            if (q.id === 21 && ans.choice === 'B') trapFails++;
                 if (q.id === 23 && ans.choice === 'B') trapFails++;
-                if (q.id === 24) trapFails++; // 最後一題無論點都計
+                if (q.id === 22) trapFails++; // 最後一題無論點都計
             }
             
             currentIdx++;
