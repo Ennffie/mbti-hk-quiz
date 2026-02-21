@@ -21,8 +21,10 @@
         .job-desc { font-size: 18px; color: #666; line-height: 1.6; margin-bottom: 30px; text-align: left; background: #f8f9ff; padding: 25px; border-radius: 20px; }
         .dimension-bar { margin-bottom: 15px; text-align: left; }
         .bar-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        .bar-bg { height: 12px; background: #eee; border-radius: 10px; overflow: hidden; display: flex; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #36d1dc, #5b86e5); transition: 1s ease; }
+        .bar-bg { height: 12px; background: #eee; border-radius: 10px; overflow: hidden; display: flex; position: relative; }
+        .bar-fill-left { height: 100%; background: linear-gradient(90deg, #ff6b6b, #ff8e8e); transition: 1s ease; border-radius: 10px 0 0 10px; }
+        .bar-fill-right { height: 100%; background: linear-gradient(90deg, #4ecdc4, #44a3aa); transition: 1s ease; border-radius: 0 10px 10px 0; }
+        .bar-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: white; z-index: 10; }
         .btn { width: 100%; padding: 20px; background: #8A2BE2; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: 800; cursor: pointer; margin-top: 30px; }
         .stats-box { background: #f0f0f0; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
         .stat-item { display: inline-block; margin: 5px 10px; font-size: 14px; color: #666; }
@@ -182,18 +184,24 @@
             else if (trustScore >= 95) trustStat.style.color = '#2ecc71';
             
             const dims = [
-                { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向' },
-                { n: '資訊 S/N', v: data.scores.SN, l: '實感', r: '直覺' },
-                { n: '決策 T/F', v: data.scores.TF, l: '思考', r: '情感' },
-                { n: '風格 P/J', v: data.scores.PJ, l: '感知', r: '判斷' }
+                { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向', leftColor: 'bar-fill-left', rightColor: 'bar-fill-right' },
+                { n: '資訊 S/N', v: data.scores.SN, l: '實感', r: '直覺', leftColor: 'bar-fill-left', rightColor: 'bar-fill-right' },
+                { n: '決策 T/F', v: data.scores.TF, l: '思考', r: '情感', leftColor: 'bar-fill-left', rightColor: 'bar-fill-right' },
+                { n: '風格 P/J', v: data.scores.PJ, l: '感知', r: '判斷', leftColor: 'bar-fill-left', rightColor: 'bar-fill-right' }
             ];
 
             const stats = document.getElementById('stats');
             dims.forEach(d => {
+                const leftWidth = d.v;
+                const rightWidth = 100 - d.v;
                 stats.innerHTML += `
                     <div class="dimension-bar">
                         <div class="bar-label"><span>${d.l} (${d.v}%)</span><span>${d.r} (${100-d.v}%)</span></div>
-                        <div class="bar-bg"><div class="bar-fill" style="width:${d.v}%"></div></div>
+                        <div class="bar-bg">
+                            <div class="${d.leftColor}" style="width:${leftWidth}%"></div>
+                            <div class="bar-center"></div>
+                            <div class="${d.rightColor}" style="width:${rightWidth}%"></div>
+                        </div>
                     </div>`;
             });
         };
