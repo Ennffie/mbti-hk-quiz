@@ -299,19 +299,19 @@
             // 陷阱題（5題）
             {
                 id: 21, type: 'grid', layout: 'col', dim: 'TRAP', progress: 84, isTrap: true,
-                q: "⚠️ 陷阱題：邊個係真嘅？",
-                A: { emoji: '🍍', text: '菠蘿包\n冇菠蘿 ✅' },
-                B: { emoji: '🥟', text: '叉燒包\n冇叉燒 ❌' }
+                q: "邊個係真嘅？",
+                A: { emoji: '🍍', text: '菠蘿包\n冇菠蘿' },
+                B: { emoji: '🥟', text: '叉燒包\n冇叉燒' }
             },
             {
                 id: 22, type: 'grid', layout: 'row', dim: 'TRAP', progress: 90, isTrap: true,
-                q: "⚠️ 陷阱題：老實講，你係咪亂撳緊？",
+                q: "老實講，你係咪亂撳緊？",
                 A: { emoji: '🔥', text: '我係認真嘅！' },
                 B: { emoji: '🤪', text: '你吹我唔脹' }
             },
             {
                 id: 23, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true,
-                q: "⚠️ 最後陷阱：你相信呢個測驗準唔準？",
+                q: "你相信呢個測驗準唔準？",
                 A: { emoji: '📊', text: '科學根據\n一定準' },
                 B: { emoji: '🎲', text: '求其啦\n當笑料' }
             }
@@ -347,7 +347,7 @@
             
             const trapBadge = document.getElementById('trapBadge');
             if (q.isTrap) {
-                trapBadge.textContent = '⚠️ 陷阱題';
+                trapBadge.textContent = '⚠️';
                 trapBadge.className = 'trap-badge';
             } else {
                 trapBadge.className = 'hidden';
