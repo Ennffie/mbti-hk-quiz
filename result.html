@@ -165,9 +165,21 @@
             const secs = String(data.time % 60).padStart(2, '0');
             document.getElementById('time-stat').textContent = `${mins}:${secs}`;
             
-            const trapStat = document.getElementById('trust-stat');
-            trapStat.textContent = (data.traps || 0) + '/3';
-            if (data.traps >= 2) trapStat.className = 'stat-value trap-warning';
+            // 可信度計算：100% - 陷阱題扣分(-10% each) - 答太快扣分(-1% each)
+            const trapPenalty = (data.traps || 0) * 10;
+            const fastPenalty = (data.fastAnswers || 0);
+            const trustScore = Math.max(0, 100 - trapPenalty - fastPenalty);
+            
+            // 可信度形容詞
+            let trustLabel = '';
+            if (trustScore >= 95) trustLabel = '十分之高';
+            else if (trustScore >= 80) trustLabel = '都還可以';
+            else trustLabel = '下次認真啲';
+            
+            const trustStat = document.getElementById('trust-stat');
+            trustStat.textContent = trustScore + '% (' + trustLabel + ')';
+            if (trustScore < 80) trustStat.className = 'stat-value trap-warning';
+            else if (trustScore >= 95) trustStat.style.color = '#2ecc71';
             
             const dims = [
                 { n: '能量 E/I', v: data.scores.EI, l: '外向', r: '內向' },

@@ -129,7 +129,7 @@
             { id: 23, type: 'grid', layout: 'col', dim: 'TRAP', progress: 96, isTrap: true, q: "你相信呢個測驗準唔準？", A: { emoji: '📊', text: '科學根據\n一定準' }, B: { emoji: '🎲', text: '求其啦\n當笑料' } }
         ];
 
-        let currentIdx = 0, scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 }, answers = [], startTime = null, timerInterval = null, trapFails = 0;
+        let currentIdx = 0, scores = { E:0, I:0, S:0, N:0, T:0, F:0, P:0, J:0 }, answers = [], startTime = null, timerInterval = null, trapFails = 0, questionStartTime = null, fastAnswers = 0;
 
         function startQuiz() {
             document.getElementById('cover-page').classList.add('hidden');
@@ -155,6 +155,7 @@
             container.innerHTML = '';
             if (q.type === 'slider') { renderSlider(q, container); } else { renderGrid(q, container); }
             updateNextButton();
+            questionStartTime = Date.now(); // 記錄每題開始時間
         }
 
         function renderSlider(q, container) {
@@ -226,6 +227,11 @@
 
         function nextQuestion() {
             const q = questions[currentIdx], ans = answers[currentIdx];
+            
+            // 計算答題時間
+            const answerTime = (Date.now() - questionStartTime) / 1000;
+            if (answerTime < 2) fastAnswers++;
+            
             if (q.dim !== 'TRAP') {
                 if (q.type === 'grid') { scores[ans.choice === 'A' ? q.dim[0] : q.dim[1]] += 10; }
                 else { const val = ans.value; if (val < 50) scores[q.dim[0]] += (50 - val) / 5; else scores[q.dim[1]] += (val - 50) / 5; }
@@ -246,7 +252,7 @@
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const final = { EI: Math.round((scores.E / (scores.E + scores.I || 1)) * 100), SN: Math.round((scores.S / (scores.S + scores.N || 1)) * 100), TF: Math.round((scores.T / (scores.T + scores.F || 1)) * 100), PJ: Math.round((scores.P / (scores.P + scores.J || 1)) * 100) };
             const type = (final.EI >= 50 ? 'E' : 'I') + (final.SN >= 50 ? 'S' : 'N') + (final.TF >= 50 ? 'T' : 'F') + (final.PJ >= 50 ? 'P' : 'J');
-            localStorage.setItem('luna_mbti_result', JSON.stringify({ type, scores: final, time: elapsed, traps: trapFails }));
+            localStorage.setItem('luna_mbti_result', JSON.stringify({ type, scores: final, time: elapsed, traps: trapFails, fastAnswers: fastAnswers }));
             window.location.href = 'result.html';
         }
     </script>
