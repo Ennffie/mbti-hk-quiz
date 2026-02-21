@@ -445,6 +445,8 @@
                     card.classList.add('selected');
                     answers[currentIdx] = { choice: type };
                     updateNextButton();
+                    // Grid 自動跳下一題
+                    setTimeout(() => nextQuestion(), 300);
                 };
                 box.appendChild(card);
             });
